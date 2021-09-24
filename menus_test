@@ -1,0 +1,25 @@
+$1 init
+$1 button c1
+$1 button c2
+$1 button quit
+$1 config c1 button.text "Choice 1"
+$1 config c2 button.text "Choice 2"
+$1 config quit button.text "Exit"
+$1 display
+if ( $1 test c1 button.waspressed ) then {
+    $1 exit;
+    printf "[pass] choice 1 selected\n";
+    exit 0;
+} elif ( $1 test c2 button.waspressed ) then {
+    $1 exit;
+    printf "[pass] choice 2 selected\n";
+    exit 0;
+} elif ( $1 test quit button.waspressed ) then {
+    $1 exit;
+    printf "[pass] canceled\n";
+    exit 0;
+} else {
+    $1 exit;
+    printf "[fail] invalid response from menus.\n";
+    exit -1;
+} fi;
