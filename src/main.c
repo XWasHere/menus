@@ -60,6 +60,7 @@ int main(int argc, char** argv) {
             mkfifo(menuso, 0777);
             while (1) {
                 char *msg    = malloc(256);
+                memset(msg, 0, 256);
                 int   infd   = open(menusi, O_RDONLY);
                 int   outfd  = 0;
                 int   msglen = read(infd, msg, 1);
@@ -68,6 +69,8 @@ int main(int argc, char** argv) {
                     exit(0);
                 } else if (msg[0] == 2) {
                     // set some crap
+                    int cr = 0;
+                    int cc = 0;
                     int outfd = open(menuso, O_WRONLY);
                     int selected = 0;
                     struct pollfd pfds[1];
@@ -78,6 +81,8 @@ int main(int argc, char** argv) {
                     // save state
                     CURSOR_SAVE();
                     ALTBUF_ON();
+                    
+                    goto render;
                     
                     while (1) {
                         CURSOR_GOTO(0, 0);
@@ -115,6 +120,7 @@ int main(int argc, char** argv) {
                                 close(outfd);
                                 close(infd);
 
+                                idk:
                                 infd = open(menusi, O_RDONLY);
                                 pfds[0].fd = infd;
 
@@ -124,9 +130,22 @@ int main(int argc, char** argv) {
                                 printf("%i\n", tmp);
 
                                 if (tmp == 1) {
-                                    goto stop2;
+                                    ALTBUF_OFF();
+                                    CURSOR_LOAD();
+                                    close(outfd);
+                                    exit(0);
                                 } else if (tmp == 2) {
                                     outfd = open(menuso, O_WRONLY);
+                                } else if (tmp == 9) { // get the pressed button
+                                    outfd = open(menuso, O_WRONLY);
+                                    
+                                    write(outfd, &root->items[choices[selected]]->name_len, 4);
+                                    write(outfd, root->items[choices[selected]]->name, root->items[choices[selected]]->name_len);
+                                    
+                                    close(infd);
+                                    close(outfd);
+                                    
+                                    goto idk;
                                 }
                             }
                             //printf("%c", c);
@@ -134,13 +153,19 @@ int main(int argc, char** argv) {
                             goto stop;
                         }
 
+                        render:
                         // render
+                        CURSOR_GOTO(1, 1);
+                        cr = 1;
+                        cc = 1;
                         for (int i = 0; i < root->itemc; i++) {
                             if (root->items[i]->type == 0) {
+                                CURSOR_GOTO(cr, 0);
                                 printf("%c %s %c\n",
                                     (choices[selected] == i) ? '>' : ' ', 
                                     root->items[i]->button->text,
                                     (choices[selected] == i) ? '<' : ' ');
+                                cr++;
                             }
                         }
                     }
@@ -302,6 +327,28 @@ int main(int argc, char** argv) {
             int tlen= strlen(argv[4]);
             write(io, &tlen, 4);
             write(io, argv[4], tlen);
+        }
+    } else if (strcmp(argv[1], "test") == 0) {
+        if (strcmp(argv[3], "button.waspressed") == 0) {
+            int io  = open(menusi, O_WRONLY);
+            int len;
+            char *name;
+
+            write(io, "\x09", 1);
+            close(io);
+
+            io = open(menuso, O_RDONLY);
+            read(io, &len, 4);
+            name = malloc(len+1);
+            memset(name, 0, len+1);
+            read(io, name, len);
+            close(io);
+
+            if (strcmp(name, argv[2]) == 0) exit(0);
+            else                            exit(1);
+        } else {
+            perror("invalid test");
+            exit(-1);
         }
     }
 }
