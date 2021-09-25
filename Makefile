@@ -6,14 +6,14 @@ GCC       := gcc
 all: build
 
 buildfolder:
-  mkdir --parent $(BUILD_DIR)
+	mkdir --parent $(BUILD_DIR)
 
 build: src/main.c buildfolder
-  gcc -c src/main.c -o $(BUILD_DIR)/main.o
-  gcc $(BUILD_DIR)/main.o -o $(BUILD_DIR)/menus
+	gcc -c src/main.c -o $(BUILD_DIR)/main.o
+ 	gcc $(BUILD_DIR)/main.o -o $(BUILD_DIR)/menus
   
 clean:
-  rm build/*
+ 	rm build/*
 
 test:
-  ./menus_test $(BUILD_DIR)/menus
+ 	./menus_test $(BUILD_DIR)/menus
