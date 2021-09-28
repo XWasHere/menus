@@ -104,7 +104,7 @@ int main(int argc, char** argv) {
                     
                     while (1) {
                         CURSOR_GOTO(0, 0);
-                        printf("%i", poll(pfds, 1, -1));
+			poll(pfds, 1, -1);
                         
                         // input handling
 
@@ -144,8 +144,6 @@ int main(int argc, char** argv) {
 
                                 poll(pfds, 1, -1);
                                 read(infd, &tmp, 1);
-
-                                printf("%i\n", tmp);
 
                                 if (tmp == 1) {
                                     ALTBUF_OFF();
