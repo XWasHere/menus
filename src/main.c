@@ -52,18 +52,12 @@ int main(int argc, char** argv) {
     sprintf(menuso, "/tmp/.menus.%i.o", id);
     if (strcmp(argv[1], "init") == 0) {
         if (fork() == 0) {
-#ifdef DEBUG
-            perror("[DAEMON] menus daemon started\n");
-#endif
             menu_t *root = malloc(sizeof(menu_t));
             int choices[32];
             int choices_len = 0;
 
             mkfifo(menusi, 0777);
             mkfifo(menuso, 0777);
-#ifdef DEBUG
-            perror("[DAEMON] entering runloop\n");
-#endif
             while (1) {
                 char *msg    = malloc(256);
                 memset(msg, 0, 256);
@@ -71,15 +65,8 @@ int main(int argc, char** argv) {
                 int   outfd  = 0;
                 int   msglen = read(infd, msg, 1);
                 if (msg[0] == 1) {
-//                    printf("EXIT\n");
-#ifdef DEBUG
-		perror("[DAEMON] got command \"EXIT\"\n");
-#endif
                     exit(0);
                 } else if (msg[0] == 2) {
-#ifdef DEBUG
-		perror("[DAEMON] got command \"DISPLAY\"\n");
-#endif
                     // set some crap
                     int cr = 0;
                     int cc = 0;
@@ -123,9 +110,6 @@ int main(int argc, char** argv) {
                                     }
                                 }
                             } else if (c == 13) {
-#ifdef DEBUG
-				perror("[DAEMON (RUNNING)] ITEM SELECTED\n");
-#endif
                                 char tmp = '\x08';
 
                                 write(outfd, &tmp, 1);
@@ -145,30 +129,14 @@ int main(int argc, char** argv) {
                                 printf("%i\n", tmp);
 
                                 if (tmp == 1) {
-#ifdef DEBUG
-					perror("[DAEMON (PAUSED)] GOT COMMAND \"EXIT\"\n");
-#endif
                                     ALTBUF_OFF();
                                     CURSOR_LOAD();
                                     close(outfd);
                                     exit(0);
                                 } else if (tmp == 2) {
-#ifdef DEBUG
-					perror("[DEAMON (PAUSED)] GOT COMMAND \"RESUME\"\n");
-#endif
                                     outfd = open(menuso, O_WRONLY);
                                 } else if (tmp == 9) { // get the pressed button
-#ifdef DEBUG
-					perror("[DAEMON (PAUSED)] GOT COMMAND \"GET_PRESSED\"\n");
-#endif
                                     outfd = open(menuso, O_WRONLY);
-
-#ifdef DEBUG
-                                    char *thing = malloc(5);
-					memset(thing, 0, 5);
-					sprintf (thing, "%i\n", outfd);
-					perror(thing);
-#endif
 		                        write(outfd, &root->items[choices[selected]]->name_len, 4);
                                     write(outfd, root->items[choices[selected]]->name, root->items[choices[selected]]->name_len);
                                     
@@ -178,11 +146,7 @@ int main(int argc, char** argv) {
                                     goto idk;
                                 }
                             }
-                            //printf("%c", c);
                         } else if (op == '\x07') {
-#ifdef DEBUG
-				perror("[DAEMON] GOT COMMAND \"PAUSE\"\n");
-#endif
                             goto stop;
                         }
 
@@ -213,15 +177,11 @@ int main(int argc, char** argv) {
                     char type;
                     read(infd, &type, 1);
                     if (type == 1) {
-#ifdef DEBUG
-			perror("[DAEMON] GOT COMMAND \"ADD BUTTON\"\n");
-#endif
                         int name_len;
                         read(infd, &name_len, 4);
                         char *name = malloc(name_len+1);
                         memset(name, 0, name_len+1);
                         read(infd, name, name_len);
-//                        printf("BUTTON %s %i\n", name, name_len);
                         
                         choices[choices_len] = root->itemc;
                         choices_len++;
@@ -246,9 +206,6 @@ int main(int argc, char** argv) {
                     read(infd, &param,      1);
                     if (targettype == 1) {
                         if (param == 1) {
-#ifdef DEBUG
-				perror("[DAEMON] GOT COMMAND \"CONFIG BUTTON.TEXT\"\n");
-#endif
                             int targetlen;
                             int valuelen;
                             char *target;
@@ -263,7 +220,6 @@ int main(int argc, char** argv) {
                             memset(value, 0, valuelen + 1);
                             read(infd, value, valuelen);
 
-//                            printf("CONFIG %s.TEXT \"%s\"\r\n",target,value);
                             for (int i = 0; i < root->itemc; i++) {
                                 if (strcmp(root->items[i]->name, target)==0) {
                                     root->items[i]->button->text     = target;
@@ -272,12 +228,7 @@ int main(int argc, char** argv) {
                             }
                         }
                     }
-                } else {
-#ifdef DEBUG
-			perror("[DAEMON] GOT COMMAND \"NOOP\"\n");
-#endif
-//                    printf("NOOP %x\n", msg[0]);
-                }
+                } else {}
                 free(msg);
                 close(infd);
             }
@@ -374,9 +325,6 @@ int main(int argc, char** argv) {
         }
     } else if (strcmp(argv[1], "test") == 0) {
         if (strcmp(argv[3], "button.waspressed") == 0) {
-#ifdef DEBUG
-		perror("[CLIENT] GOT COMMAND \"TEST BUTTON.WASPRESSED\"\n");
-#endif
             int io  = open(menusi, O_WRONLY);
             int len;
             char *name;
@@ -391,19 +339,8 @@ int main(int argc, char** argv) {
             memset(name, 0, len+1);
             read(io, name, len+1);
             close(io);
-
-#ifdef DEBUG
-		perror (name);
-		perror (argv[2]);
-#endif    
-	if (strcmp(name, argv[2]) == 0) {
-		exit(0);
-			perror("yes\n");
-		}
-            else                            {
-		exit(1);
-			perror("no\n");
-		}
+	if (strcmp(name, argv[2]) == 0) exit(0);
+            else		        exit(1);
         } else {
             perror("invalid test");
             exit(-1);
