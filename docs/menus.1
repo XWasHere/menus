@@ -1,0 +1,43 @@
+.TH menus 1
+.SH NAME
+menus \- the menu tool from hell
+.SH SYNOPSIS
+.SY menus
+.OP --help
+.YS
+get help
+.SY menus\ init
+.YS
+start a menus daemon
+.SY menus\ button
+.RI name
+.YS
+add a button with name 
+.B  name
+.SY menus\ config
+.RI name
+.RI property
+.RI value
+.YS
+set a property on 
+.B  name
+.SY menus\ test
+.RI name
+.RI property
+.YS
+test a property on 
+.B  NAME
+.B  name
+.SY menus\ exit
+.YS
+kill a menus daemon
+.SH PROPERTIES
+button.text       - the text on a button
+
+button.waspressed - was a button pressed, (only accessible with 
+.B test 
+not 
+.B config
+)
+.SH SEE ALSO
+sh(1), bash(1)

@@ -47,6 +47,7 @@ char           menusi[256];
 char           menuso[256];
 
 int main(int argc, char** argv) {
+	if (argc == 1) goto help;
     id = getppid();
     sprintf(menusi, "/tmp/.menus.%i.i", id);
     sprintf(menuso, "/tmp/.menus.%i.o", id);
@@ -345,5 +346,8 @@ int main(int argc, char** argv) {
             perror("invalid test");
             exit(-1);
         }
-    }
+    } else {
+		help:
+		printf("%s [\"init\"|\"display\"|\"button\" name|\"config\" name \"button.text\" text|\"test\" name \"button.waspressed\"]\n", argv[0]);
+	}
 }
