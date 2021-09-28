@@ -4,6 +4,7 @@ pkgrel=1
 arch=(any)
 optdepends=('bash: for writing scripts using menus')
 pkgdesc="crappy thing for getting user input in shell scripts"
+licence=(GPL)
 
 package() {
 	mkdir --parent $pkgdir/usr/bin
