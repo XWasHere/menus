@@ -258,6 +258,71 @@ int main(int argc, char** argv) {
                                 }
                             }
                         }
+                    } else if (targettype == 2) {
+                        if (param == 1) {
+                            int targetlen;
+                            int value;
+                            char *target;
+                            
+                            read(infd, &targetlen, 4);
+                            target = malloc(targetlen + 1);
+                            memset(target, 0, targetlen + 1);
+                            read(infd, target, targetlen);
+                            read(infd, &value, 4);
+
+                            menuitem_t *t;
+
+                            for (int i = 0; i < root->itemc; i++) {
+                                if (strcmp(root->items[i]->name, target)==0) {
+                                    t = root->items[i];
+                                    t->line=value;
+                                }
+                            }
+
+                            menuitem_t *top   = 0;
+                            menuitem_t *bottom= 0;
+                            menuitem_t *above = 0;
+                            menuitem_t *below = 0;
+
+                            for (int i = 0; i < root->itemc; i++) {
+                                if (root->items[i]->line < value) {
+                                    if (above == 0) {
+                                        above = root->items[i];
+                                    } else if (root->items[i]->line > above->line) {
+                                        above = root->items[i];
+                                    }
+                                }
+                                if (root->items[i]->line > value) {
+                                    if (below == 0) {
+                                        below = root->items[i];
+                                    } else if (root->items[i]->line < below->line) {
+                                        below = root->items[i];
+                                    }
+                                }
+                                if (top == 0) {
+                                    top = root->items[i];
+                                } else if (root->items[i]->line < top->line) {
+                                    top = root->items[i];
+                                }
+                                if (bottom == 0) {
+                                    bottom = root->items[i];
+                                } else if (root->items[i]->line > bottom->line) {
+                                    bottom = root->items[i];
+                                }
+                            }
+
+                            if (above == 0) {
+                                above = bottom;
+                            }
+                            if (below == 0) {
+                                below = top;
+                            }
+                            
+                            above->cdown = t;
+                            t->cup       = above;
+                            below->cup   = t;
+                            t->cdown     = below;
+                        }
                     }
                 }
                 free(msg);
@@ -353,6 +418,15 @@ int main(int argc, char** argv) {
             int tlen= strlen(argv[4]);
             write(io, &tlen, 4);
             write(io, argv[4], tlen);
+        } else if (strcmp(argv[3], "line") == 0) {
+            int io = open(menusi, O_WRONLY);
+            write(io, "\x04\x02\x01", 3);
+            int l;
+            sscanf(argv[4], "%i", &l);
+            int tl = strlen(argv[2]);
+            write(io, &tl,4);
+            write(io, argv[2], tl);
+            write(io, &l, 4);
         }
     } else if (strcmp(argv[1], "test") == 0) {
         if (strcmp(argv[3], "button.waspressed") == 0) {
