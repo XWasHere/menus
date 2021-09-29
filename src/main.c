@@ -452,6 +452,6 @@ int main(int argc, char** argv) {
         }
     } else {
 		help:
-		printf("%s [\"init\"|\"display\"|\"button\" name|\"config\" name \"button.text\" text|\"test\" name \"button.waspressed\"]\n", argv[0]);
+		printf("%s [\"init\"|\"display\"|\"button\" name|\"config\" name property value|\"test\" name property]\n", argv[0]);
 	}
 }
