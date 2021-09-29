@@ -1,10 +1,11 @@
 pkgname="menus"
-pkgver=1.0.1
-pkgrel=2
+pkgver=1.1.0
+pkgrel=3
 arch=('x86_64')
 optdepends=('bash: for writing scripts using menus')
 pkgdesc="crappy thing for getting user input in shell scripts"
 licence=('GPL')
+website="https://github.com/xwashere/menus"
 
 package() {
 	mkdir --parent $pkgdir/usr/bin
