@@ -49,11 +49,12 @@ struct menuitem {
     int   col;
     int   type;
     
+    int              manual_focus;
     struct menuitem *cdown;
     struct menuitem *cup;
     struct menuitem *cright;
     struct menuitem *cleft;
-    
+
     union {
         button_t *button;
     };
@@ -129,10 +130,14 @@ int main(int argc, char** argv) {
                                 if (c == '[') {
                                     read(infd, &op, 1);
                                     read(infd, &c , 1);
-                                    if (c == 'B') {
-                                        selected = selected->cdown;
-                                    } else if (c == 'A') {
+                                    if (c == 'A') {
                                         selected = selected->cup;
+                                    } else if (c == 'B') {
+                                        selected = selected->cdown;
+                                    } else if (c == 'C') {
+                                        selected = selected->cright;
+                                    } else if (c == 'D') {
+                                        selected = selected->cleft;
                                     }
                                 }
                             } else if (c == 13) {
@@ -225,6 +230,9 @@ int main(int argc, char** argv) {
                             item->cdown          = item;
                             item->cup            = item;
                         }
+                        item->cright             = item;
+                        item->cleft              = item;
+                        item->manual_focus       = 0;
                         btn->text                = "";
                         btn->text_len            = 1;
                         root->items              = realloc(root->items, sizeof(menuitem_t*) * root->itemc);
@@ -282,49 +290,51 @@ int main(int argc, char** argv) {
                                 }
                             }
 
-                            menuitem_t *top   = 0;
-                            menuitem_t *bottom= 0;
-                            menuitem_t *above = 0;
-                            menuitem_t *below = 0;
+                            if (!t->manual_focus) {
+                                menuitem_t *top   = 0;
+                                menuitem_t *bottom= 0;
+                                menuitem_t *above = 0;
+                                menuitem_t *below = 0;
 
-                            for (int i = 0; i < root->itemc; i++) {
-                                if (root->items[i]->line < value) {
-                                    if (above == 0) {
-                                        above = root->items[i];
-                                    } else if (root->items[i]->line > above->line) {
-                                        above = root->items[i];
+                                for (int i = 0; i < root->itemc; i++) {
+                                    if (root->items[i]->line < value) {
+                                        if (above == 0) {
+                                            above = root->items[i];
+                                        } else if (root->items[i]->line > above->line) {
+                                            above = root->items[i];
+                                        }
+                                    }
+                                    if (root->items[i]->line > value) {
+                                        if (below == 0) {
+                                            below = root->items[i];
+                                        } else if (root->items[i]->line < below->line) {
+                                            below = root->items[i];
+                                        }
+                                    }
+                                    if (top == 0) {
+                                        top = root->items[i];
+                                    } else if (root->items[i]->line < top->line) {
+                                        top = root->items[i];
+                                    }
+                                    if (bottom == 0) {
+                                        bottom = root->items[i];
+                                    } else if (root->items[i]->line > bottom->line) {
+                                        bottom = root->items[i];
                                     }
                                 }
-                                if (root->items[i]->line > value) {
-                                    if (below == 0) {
-                                        below = root->items[i];
-                                    } else if (root->items[i]->line < below->line) {
-                                        below = root->items[i];
-                                    }
-                                }
-                                if (top == 0) {
-                                    top = root->items[i];
-                                } else if (root->items[i]->line < top->line) {
-                                    top = root->items[i];
-                                }
-                                if (bottom == 0) {
-                                    bottom = root->items[i];
-                                } else if (root->items[i]->line > bottom->line) {
-                                    bottom = root->items[i];
-                                }
-                            }
 
-                            if (above == 0) {
-                                above = bottom;
+                                if (above == 0) {
+                                    above = bottom;
+                                }
+                                if (below == 0) {
+                                    below = top;
+                                }
+                                
+                                above->cdown = t;
+                                t->cup       = above;
+                                below->cup   = t;
+                                t->cdown     = below;
                             }
-                            if (below == 0) {
-                                below = top;
-                            }
-                            
-                            above->cdown = t;
-                            t->cup       = above;
-                            below->cup   = t;
-                            t->cdown     = below;
                         } else if (param == 2) {
                             int targetlen;
                             int value;
@@ -342,6 +352,106 @@ int main(int argc, char** argv) {
                                 if (strcmp(root->items[i]->name, target)==0) {
                                     t = root->items[i];
                                     t->col=value;
+                                }
+                            }
+                        } else if (param == 3) { 
+                            int targetlen;
+                            int valuelen;
+                            char *target;
+                            char *value;
+
+                            read(infd, &targetlen, 4);
+                            target = malloc(targetlen + 1);
+                            memset(target, 0, targetlen + 1);
+                            read(infd, target, targetlen);
+                            read(infd, &valuelen, 4);
+                            value = malloc(valuelen + 1);
+                            memset(value, 0, valuelen + 1);
+                            read(infd, value, valuelen);
+
+                            for (int i = 0; i < root->itemc; i++) {
+                                if (strcmp(root->items[i]->name, target)==0) {
+                                    for (int ii = 0; ii < root->itemc; ii++) {
+                                        if (strcmp(root->items[ii]->name, value)==0) {
+                                            root->items[i]->cup = root->items[ii];
+                                            root->items[i]->manual_focus = 1;
+                                        }
+                                    }
+                                }
+                            }
+                        } else if (param == 4) { 
+                            int targetlen;
+                            int valuelen;
+                            char *target;
+                            char *value;
+
+                            read(infd, &targetlen, 4);
+                            target = malloc(targetlen + 1);
+                            memset(target, 0, targetlen + 1);
+                            read(infd, target, targetlen);
+                            read(infd, &valuelen, 4);
+                            value = malloc(valuelen + 1);
+                            memset(value, 0, valuelen + 1);
+                            read(infd, value, valuelen);
+
+                            for (int i = 0; i < root->itemc; i++) {
+                                if (strcmp(root->items[i]->name, target)==0) {
+                                    for (int ii = 0; ii < root->itemc; ii++) {
+                                        if (strcmp(root->items[ii]->name, value)==0) {
+                                            root->items[i]->cdown = root->items[ii];
+                                            root->items[i]->manual_focus = 1;
+                                        }
+                                    }
+                                }
+                            }
+                        } else if (param == 5) { 
+                            int targetlen;
+                            int valuelen;
+                            char *target;
+                            char *value;
+
+                            read(infd, &targetlen, 4);
+                            target = malloc(targetlen + 1);
+                            memset(target, 0, targetlen + 1);
+                            read(infd, target, targetlen);
+                            read(infd, &valuelen, 4);
+                            value = malloc(valuelen + 1);
+                            memset(value, 0, valuelen + 1);
+                            read(infd, value, valuelen);
+
+                            for (int i = 0; i < root->itemc; i++) {
+                                if (strcmp(root->items[i]->name, target)==0) {
+                                    for (int ii = 0; ii < root->itemc; ii++) {
+                                        if (strcmp(root->items[ii]->name, value)==0) {
+                                            root->items[i]->cright = root->items[ii];
+                                            root->items[i]->manual_focus = 1;
+                                        }
+                                    }
+                                }
+                            }
+                        } else if (param == 6) { 
+                            int targetlen;
+                            int valuelen;
+                            char *target;
+                            char *value;
+
+                            read(infd, &targetlen, 4);
+                            target = malloc(targetlen + 1);
+                            memset(target, 0, targetlen + 1);
+                            read(infd, target, targetlen);
+                            read(infd, &valuelen, 4);
+                            value = malloc(valuelen + 1);
+                            memset(value, 0, valuelen + 1);
+                            read(infd, value, valuelen);
+
+                            for (int i = 0; i < root->itemc; i++) {
+                                if (strcmp(root->items[i]->name, target)==0) {
+                                    for (int ii = 0; ii < root->itemc; ii++) {
+                                        if (strcmp(root->items[ii]->name, value)==0) {
+                                            root->items[i]->cleft = root->items[ii];
+                                            root->items[i]->manual_focus = 1;
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -458,6 +568,42 @@ int main(int argc, char** argv) {
             write(io, &tl,4);
             write(io, argv[2], tl);
             write(io, &l, 4);
+        } else if (strcmp(argv[3], "focus_up") == 0) {
+            int io  = open(menusi, O_WRONLY);
+            write(io, "\x04\x02\x03", 3);
+            int len = strlen(argv[2]);
+            write(io, &len, 4);
+            write(io, argv[2], len);
+            int tlen= strlen(argv[4]);
+            write(io, &tlen, 4);
+            write(io, argv[4], tlen);
+        } else if (strcmp(argv[3], "focus_down") == 0) {
+            int io  = open(menusi, O_WRONLY);
+            write(io, "\x04\x02\x04", 3);
+            int len = strlen(argv[2]);
+            write(io, &len, 4);
+            write(io, argv[2], len);
+            int tlen= strlen(argv[4]);
+            write(io, &tlen, 4);
+            write(io, argv[4], tlen);
+        } else if (strcmp(argv[3], "focus_right") == 0) {
+            int io  = open(menusi, O_WRONLY);
+            write(io, "\x04\x02\x05", 3);
+            int len = strlen(argv[2]);
+            write(io, &len, 4);
+            write(io, argv[2], len);
+            int tlen= strlen(argv[4]);
+            write(io, &tlen, 4);
+            write(io, argv[4], tlen);
+        } else if (strcmp(argv[3], "focus_left") == 0) {
+            int io  = open(menusi, O_WRONLY);
+            write(io, "\x04\x02\x06", 3);
+            int len = strlen(argv[2]);
+            write(io, &len, 4);
+            write(io, argv[2], len);
+            int tlen= strlen(argv[4]);
+            write(io, &tlen, 4);
+            write(io, argv[4], tlen);
         }
     } else if (strcmp(argv[1], "test") == 0) {
         if (strcmp(argv[3], "button.waspressed") == 0) {

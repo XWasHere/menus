@@ -2,15 +2,33 @@ $1 init
 $1 button c1
 $1 button quit
 $1 button c2 # out of order to test automatic order selection
+
 $1 config c1   button.text "Choice 1"
 $1 config c2   button.text "Choice 2"
 $1 config quit button.text "Exit"
+
 $1 config c1   line        1
 $1 config c1   col         1
 $1 config c2   line        1
 $1 config c2   col         7
 $1 config quit line        2
 $1 config quit col         3
+
+$1 config quit focus_up    c1
+$1 config quit fucus_down  c1
+$1 config quit focus_right quit
+$1 config quit focus_left  quit
+
+$1 config c1   focus_down  quit
+$1 config c1   focus_up    quit
+$1 config c1   focus_right c2
+$1 config c1   focus_left  c2
+
+$1 config c2   focus_down  quit
+$1 config c2   focus_up    quit
+$1 config c2   focus_right c1
+$1 config c2   focus_left  c1
+
 $1 display
 if ( $1 test c1 button.waspressed ) then {
     $1 exit;
