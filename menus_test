@@ -10,9 +10,9 @@ $1 config quit button.text "Exit"
 $1 config c1   line        1
 $1 config c1   col         1
 $1 config c2   line        1
-$1 config c2   col         7
+$1 config c2   col         13
 $1 config quit line        2
-$1 config quit col         3
+$1 config quit col         9
 
 $1 config quit focus_up    c1
 $1 config quit fucus_down  c1

@@ -264,8 +264,8 @@ int main(int argc, char** argv) {
 
                             for (int i = 0; i < root->itemc; i++) {
                                 if (strcmp(root->items[i]->name, target)==0) {
-                                    root->items[i]->button->text     = target;
-                                    root->items[i]->button->text_len = targetlen;
+                                    root->items[i]->button->text     = value;
+                                    root->items[i]->button->text_len = valuelen;
                                 }
                             }
                         }
