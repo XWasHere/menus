@@ -29,6 +29,8 @@ $1 config c2   focus_up    quit
 $1 config c2   focus_right c1
 $1 config c2   focus_left  c1
 
+$1 config @default style.selected highlight
+
 $1 display
 if ( $1 test c1 button.waspressed ) then {
     $1 exit;

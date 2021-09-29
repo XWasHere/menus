@@ -26,6 +26,8 @@
 
 #define ALTBUF_ON()           printf("\e[?1049h")
 #define ALTBUF_OFF()          printf("\e[?1049l")
+#define TEXT_RESET()          printf("\e[0m")
+#define TEXT_INVERT()         printf("\e[7m")
 #define CURSOR_GOTO(row, col) printf("\e[%i;%iH", row, col)
 #define CURSOR_SAVE()         printf("\e7")
 #define CURSOR_LOAD()         printf("\e8")
@@ -47,6 +49,7 @@ struct menuitem {
     char *name;
     int   line;
     int   col;
+    char  selected_style;
     int   type;
     
     int              manual_focus;
@@ -81,6 +84,8 @@ int main(int argc, char** argv) {
             menu_t *root = malloc(sizeof(menu_t));
             menuitem_t *selected;
             menuitem_t *defaultc;
+
+            char default_selected_style = 1;
 
             int nextline = 1;
 
@@ -187,10 +192,27 @@ int main(int argc, char** argv) {
                         for (int i = 0; i < root->itemc; i++) {
                             if (root->items[i]->type == 0) {
                                 CURSOR_GOTO(root->items[i]->line, root->items[i]->col);
-                                printf("%c %s %c\n",
-                                    (root->items[i] == selected) ? '>' : ' ', 
-                                    root->items[i]->button->text,
-                                    (root->items[i] == selected) ? '<' : ' ');
+                                char style;
+                                if (root->items[i]->selected_style == 0) {
+                                    style = default_selected_style;
+                                } else {
+                                    style = root->items[i]->selected_style;
+                                }
+                                if (style == 1) {
+                                    printf("%c %s %c\n",
+                                        (root->items[i] == selected) ? '>' : ' ', 
+                                        root->items[i]->button->text,
+                                        (root->items[i] == selected) ? '<' : ' ');
+                                } else if (style == 2) {
+                                    TEXT_RESET();
+                                    if (root->items[i] == selected) {
+                                        TEXT_INVERT();
+                                    }
+                                    printf("%s\n", root->items[i]->button->text);
+                                    if (root->items[i] == selected) {
+                                        TEXT_INVERT();
+                                    }
+                                }
                                 cr++;
                             }
                         }
@@ -232,6 +254,7 @@ int main(int argc, char** argv) {
                         }
                         item->cright             = item;
                         item->cleft              = item;
+                        item->selected_style     = 0;
                         item->manual_focus       = 0;
                         btn->text                = "";
                         btn->text_len            = 1;
@@ -454,6 +477,26 @@ int main(int argc, char** argv) {
                                     }
                                 }
                             }
+                        } else if (param == 7) {
+                            int targetlen;
+                            char* target;
+                            char style;
+
+                            read(infd, &style, 1);
+                            read(infd, &targetlen, 4);
+                            target = malloc(targetlen + 1);
+                            memset(target, 0, targetlen + 1);
+                            read(infd, target, targetlen);
+
+                            if (strcmp(target, "@default") == 0) {
+                                default_selected_style = style;
+                            } else {
+                                for (int i = 0; i < root->itemc; i++) {
+                                    if (strcmp(root->items[i]->name, target) == 0) {
+                                        root->items[i]->selected_style = style;
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -604,6 +647,20 @@ int main(int argc, char** argv) {
             int tlen= strlen(argv[4]);
             write(io, &tlen, 4);
             write(io, argv[4], tlen);
+        } else if (strcmp(argv[3], "style.selected") == 0) {
+            if (strcmp(argv[4], "arrows") == 0) {
+                int io = open(menusi, O_WRONLY);
+                write(io, "\x04\x02\x07\x01", 4);
+                int len = strlen(argv[2]);
+                write(io, &len, 4);
+                write(io, argv[2], len);
+            } else if (strcmp(argv[4], "highlight") == 0) {
+                int io = open(menusi, O_WRONLY);
+                write(io, "\x04\x02\x07\x02", 4);
+                int len = strlen(argv[2]);
+                write(io, &len, 4);
+                write(io, argv[2], len);
+            }
         }
     } else if (strcmp(argv[1], "test") == 0) {
         if (strcmp(argv[3], "button.waspressed") == 0) {
