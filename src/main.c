@@ -24,11 +24,9 @@
 #include <poll.h>
 #include <termios.h>
 
-#define ALTBUF_ON()  printf("\e[?1049h")
-#define ALTBUF_OFF() printf("\e[?1049l")
-
+#define ALTBUF_ON()           printf("\e[?1049h")
+#define ALTBUF_OFF()          printf("\e[?1049l")
 #define CURSOR_GOTO(row, col) printf("\e[%i;%iH", row, col)
-
 #define CURSOR_SAVE()         printf("\e7")
 #define CURSOR_LOAD()         printf("\e8")
 
@@ -104,7 +102,7 @@ int main(int argc, char** argv) {
                     
                     while (1) {
                         CURSOR_GOTO(0, 0);
-			poll(pfds, 1, -1);
+            			poll(pfds, 1, -1);
                         
                         // input handling
 
@@ -154,7 +152,7 @@ int main(int argc, char** argv) {
                                     outfd = open(menuso, O_WRONLY);
                                 } else if (tmp == 9) { // get the pressed button
                                     outfd = open(menuso, O_WRONLY);
-		                        write(outfd, &root->items[choices[selected]]->name_len, 4);
+		                            write(outfd, &root->items[choices[selected]]->name_len, 4);
                                     write(outfd, root->items[choices[selected]]->name, root->items[choices[selected]]->name_len);
                                     
                                     close(infd);
@@ -245,7 +243,7 @@ int main(int argc, char** argv) {
                             }
                         }
                     }
-                } else {}
+                }
                 free(msg);
                 close(infd);
             }
@@ -313,8 +311,8 @@ int main(int argc, char** argv) {
                     exit(1);
                 }
             } else if (pfds[1].revents & POLLHUP) {
-			exit(0);
-		}
+			    exit(0);
+		    }
         }
 
         tcsetattr(0, 0, &backup);
@@ -356,8 +354,8 @@ int main(int argc, char** argv) {
             memset(name, 0, len+1);
             read(io, name, len+1);
             close(io);
-	if (strcmp(name, argv[2]) == 0) exit(0);
-            else		        exit(1);
+        	if (strcmp(name, argv[2]) == 0) exit(0);
+            else	              	        exit(1);
         } else {
             perror("invalid test");
             exit(-1);
