@@ -46,11 +46,14 @@ struct menuitem {
     int   name_len;
     char *name;
     int   line;
+    int   col;
     int   type;
     
     struct menuitem *cdown;
     struct menuitem *cup;
-
+    struct menuitem *cright;
+    struct menuitem *cleft;
+    
     union {
         button_t *button;
     };
@@ -178,7 +181,7 @@ int main(int argc, char** argv) {
                         cc = 1;
                         for (int i = 0; i < root->itemc; i++) {
                             if (root->items[i]->type == 0) {
-                                CURSOR_GOTO(root->items[i]->line, 0);
+                                CURSOR_GOTO(root->items[i]->line, root->items[i]->col);
                                 printf("%c %s %c\n",
                                     (root->items[i] == selected) ? '>' : ' ', 
                                     root->items[i]->button->text,
@@ -322,6 +325,25 @@ int main(int argc, char** argv) {
                             t->cup       = above;
                             below->cup   = t;
                             t->cdown     = below;
+                        } else if (param == 2) {
+                            int targetlen;
+                            int value;
+                            char *target;
+                            
+                            read(infd, &targetlen, 4);
+                            target = malloc(targetlen + 1);
+                            memset(target, 0, targetlen + 1);
+                            read(infd, target, targetlen);
+                            read(infd, &value, 4);
+
+                            menuitem_t *t;
+
+                            for (int i = 0; i < root->itemc; i++) {
+                                if (strcmp(root->items[i]->name, target)==0) {
+                                    t = root->items[i];
+                                    t->col=value;
+                                }
+                            }
                         }
                     }
                 }
@@ -421,6 +443,15 @@ int main(int argc, char** argv) {
         } else if (strcmp(argv[3], "line") == 0) {
             int io = open(menusi, O_WRONLY);
             write(io, "\x04\x02\x01", 3);
+            int l;
+            sscanf(argv[4], "%i", &l);
+            int tl = strlen(argv[2]);
+            write(io, &tl,4);
+            write(io, argv[2], tl);
+            write(io, &l, 4);
+        } else if (strcmp(argv[3], "col") == 0) {
+            int io = open(menusi, O_WRONLY);
+            write(io, "\x04\x02\x02", 3);
             int l;
             sscanf(argv[4], "%i", &l);
             int tl = strlen(argv[2]);
