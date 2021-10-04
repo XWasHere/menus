@@ -23,6 +23,10 @@
 #include <fcntl.h>
 #include <poll.h>
 #include <termios.h>
+#ifdef __APPLE__
+    #include <sys/types.h>
+    #include <sys/stat.h>
+#endif
 
 #define ALTBUF_ON()           printf("\e[?1049h")
 #define ALTBUF_OFF()          printf("\e[?1049l")
