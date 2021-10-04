@@ -7,7 +7,7 @@ GCC_ARGS  := -g3
 all: build
 
 buildfolder:
-	mkdir --parent $(BUILD_DIR)
+	mkdir -p $(BUILD_DIR)
 
 build: src/main.c buildfolder
 	gcc -c src/main.c -o $(BUILD_DIR)/main.o  $(GCC_ARGS)
