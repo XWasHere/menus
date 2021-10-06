@@ -19,6 +19,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <poll.h>
@@ -57,6 +58,9 @@ struct menuitem {
     char  selected_style;
     int   type;
     
+    struct color    *fg;
+    struct color    *bg;
+
     int              manual_focus;
     struct menuitem *cdown;
     struct menuitem *cup;
@@ -74,6 +78,14 @@ struct menu {
     menuitem_t **items;
 };
 typedef struct menu menu_t;
+
+struct color {
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
+    uint8_t alt; // for terminals that dont support RGB colors :>
+};
+typedef struct color color_t;
 
 int            id;
 char           menusi[256];
