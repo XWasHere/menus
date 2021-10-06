@@ -1,6 +1,6 @@
 pkgname="menus"
-pkgver=1.2.2
-pkgrel=6
+pkgver=1.3.2
+pkgrel=7
 arch=('x86_64')
 optdepends=('bash: for writing scripts using menus')
 pkgdesc="crappy thing for getting user input in shell scripts"
