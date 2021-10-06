@@ -16,6 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 #include "ipc.h"
+#include "color.h"
 
 #include <unistd.h>
 #include <string.h>
@@ -43,5 +44,15 @@ char* read_string(int fd) {
     char* data = malloc(len+1);
     memset(data, 0, len+1);
     read(fd, data, len);
+    return data;
+}
+
+void write_color(int fd, color_t* data) {
+    write(fd, data, 4); // you thought this would special. 
+}
+
+color_t* read_color(int fd) {
+    color_t* data = malloc(sizeof(color_t));
+    read(fd, data, 4);
     return data;
 }

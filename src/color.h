@@ -18,4 +18,18 @@
 #ifndef MENUS_COLOR_H
 #define MENUS_COLOR_H
 
+#include <stdint.h>
+
+struct color {
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
+    uint8_t alt; // for terminals that dont support RGB colors :>
+};
+typedef struct color color_t;
+
+color_t *read_hex_color(char*);
+void apply_fg(color_t* color);
+void apply_bg(color_t* color);
+
 #endif

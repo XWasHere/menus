@@ -5,6 +5,7 @@ OBJECTS = \
 	build/main.o \
 	build/daemon.o \
 	build/ipc.o \
+	build/color.o
 
 .PHONY: build clean all
 

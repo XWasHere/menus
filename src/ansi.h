@@ -32,6 +32,10 @@
 // inverts text
 #define TEXT_INVERT() printf("\e[7m")
 
+// sets the color
+#define TEXT_RGB_FG(r, g, b) printf("\e[38;2;%i;%i;%im", r, g, b)
+#define TEXT_RGB_BG(r, g, b) printf("\e[48;2;%i;%i;%im", r, g, b)
+
 // moves the cursor
 #define CURSOR_GOTO(row, col) printf("\e[%i;%iH", row, col)
 

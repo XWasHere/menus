@@ -17,3 +17,23 @@
 */
 
 #include "color.h"
+#include "ansi.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+
+color_t *read_hex_color(char *stuff) {
+    color_t* c = malloc(sizeof(color_t));
+
+    sscanf(stuff, "%2x%2x%2x", &c->r, &c->g, &c->b);
+
+    return c;
+}
+
+void apply_fg(color_t *c) {
+    TEXT_RGB_FG(c->r, c->g, c->b);
+}
+
+void apply_bg(color_t *c) {
+    TEXT_RGB_BG(c->r, c->g, c->b);
+}
