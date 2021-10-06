@@ -30,13 +30,7 @@
     #include <sys/stat.h>
 #endif
 
-#define ALTBUF_ON()           printf("\e[?1049h")
-#define ALTBUF_OFF()          printf("\e[?1049l")
-#define TEXT_RESET()          printf("\e[0m")
-#define TEXT_INVERT()         printf("\e[7m")
-#define CURSOR_GOTO(row, col) printf("\e[%i;%iH", row, col)
-#define CURSOR_SAVE()         printf("\e7")
-#define CURSOR_LOAD()         printf("\e8")
+#include "ansi.h"
 
 struct cursor_state {
     int line;
