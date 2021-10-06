@@ -1,6 +1,6 @@
 BUILD_DIR := ./build
 CC        := clang
-CC_ARGS  := -g3 -Wall
+CC_ARGS   := -g3 -Wall
 
 .PHONY: build buildfolder clean all
 
