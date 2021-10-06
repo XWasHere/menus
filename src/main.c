@@ -24,6 +24,7 @@
 #include <poll.h>
 #include <termios.h>
 #ifdef __APPLE__
+    // X - due to not having an apple device, its up to contributors to manage this. im sorry for letting you down :pensive:
     #include <sys/types.h>
     #include <sys/stat.h>
 #endif
