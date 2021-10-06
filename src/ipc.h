@@ -15,9 +15,12 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-#ifndef MENUS_DAEMON_H
-#define MENUS_DAEMON_H
+#ifndef MENUS_IPC_H
+#define MENUS_IPC_H
 
-int daemon_main(char*, char*);
+void write_string(int fd, char* data);
+
+int read_int(int fd);
+char* read_string(int fd);
 
 #endif

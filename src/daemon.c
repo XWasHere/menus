@@ -1,3 +1,20 @@
+/*
+    menus - uis for shell scripts	
+    Copyright (C) 2021 xwashere
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,6 +25,7 @@
 
 #include "daemon.h"
 #include "ansi.h"
+#include "ipc.h"
 
 struct cursor_state {
     int line;
@@ -127,8 +145,7 @@ int daemon_main(char *menusi, char *menuso) {
                         char tmp = '\x08';
 
                         write(outfd, &tmp, 1);
-                        write(outfd, &selected->name_len, 4);
-                        write(outfd, selected->name, selected->name_len);
+                        write_string(outfd, selected->name);
 
                         close(outfd);
                         close(infd);
@@ -149,8 +166,7 @@ int daemon_main(char *menusi, char *menuso) {
                             outfd = open(menuso, O_WRONLY);
                         } else if (tmp == 9) { // get the pressed button
                             outfd = open(menuso, O_WRONLY);
-                            write(outfd, &selected->name_len, 4);
-                            write(outfd, selected->name, selected->name_len);
+                            write_string(outfd,selected->name);
                             
                             close(infd);
                             close(outfd);
@@ -206,11 +222,8 @@ int daemon_main(char *menusi, char *menuso) {
             char type;
             read(infd, &type, 1);
             if (type == 1) {
-                int name_len;
-                read(infd, &name_len, 4);
-                char *name = malloc(name_len+1);
-                memset(name, 0, name_len+1);
-                read(infd, name, name_len);
+                char *name     = read_string(infd);
+                int   name_len = strlen(name);
                 
                 button_t   *btn  = malloc(sizeof(button_t));
                 menuitem_t *item = malloc(sizeof(menuitem_t));
@@ -249,38 +262,26 @@ int daemon_main(char *menusi, char *menuso) {
             read(infd, &param,      1);
             if (targettype == 1) {
                 if (param == 1) {
-                    int targetlen;
-                    int valuelen;
                     char *target;
                     char *value;
 
-                    read(infd, &targetlen, 4);
-                    target = malloc(targetlen + 1);
-                    memset(target, 0, targetlen + 1);
-                    read(infd, target, targetlen);
-                    read(infd, &valuelen, 4);
-                    value = malloc(valuelen + 1);
-                    memset(value, 0, valuelen + 1);
-                    read(infd, value, valuelen);
+                    target = read_string(infd);
+                    value  = read_string(infd);
 
                     for (int i = 0; i < root->itemc; i++) {
                         if (strcmp(root->items[i]->name, target)==0) {
                             root->items[i]->button->text     = value;
-                            root->items[i]->button->text_len = valuelen;
+                            root->items[i]->button->text_len = strlen(value);
                         }
                     }
                 }
             } else if (targettype == 2) {
                 if (param == 1) {
-                    int targetlen;
                     int value;
                     char *target;
                     
-                    read(infd, &targetlen, 4);
-                    target = malloc(targetlen + 1);
-                    memset(target, 0, targetlen + 1);
-                    read(infd, target, targetlen);
-                    read(infd, &value, 4);
+                    target = read_string(infd);
+                    value = read_int(infd);
 
                     menuitem_t *t;
 
@@ -337,15 +338,11 @@ int daemon_main(char *menusi, char *menuso) {
                         t->cdown     = below;
                     }
                 } else if (param == 2) {
-                    int targetlen;
                     int value;
                     char *target;
                     
-                    read(infd, &targetlen, 4);
-                    target = malloc(targetlen + 1);
-                    memset(target, 0, targetlen + 1);
-                    read(infd, target, targetlen);
-                    read(infd, &value, 4);
+                    target = read_string(infd);
+                    value = read_int(infd);
 
                     menuitem_t *t;
 
@@ -355,20 +352,12 @@ int daemon_main(char *menusi, char *menuso) {
                             t->col=value;
                         }
                     }
-                } else if (param == 3) { 
-                    int targetlen;
-                    int valuelen;
+                } else if (param == 3) {
                     char *target;
                     char *value;
 
-                    read(infd, &targetlen, 4);
-                    target = malloc(targetlen + 1);
-                    memset(target, 0, targetlen + 1);
-                    read(infd, target, targetlen);
-                    read(infd, &valuelen, 4);
-                    value = malloc(valuelen + 1);
-                    memset(value, 0, valuelen + 1);
-                    read(infd, value, valuelen);
+                    target = read_string(infd);
+                    value = read_string(infd);
 
                     for (int i = 0; i < root->itemc; i++) {
                         if (strcmp(root->items[i]->name, target)==0) {
@@ -381,19 +370,11 @@ int daemon_main(char *menusi, char *menuso) {
                         }
                     }
                 } else if (param == 4) { 
-                    int targetlen;
-                    int valuelen;
                     char *target;
                     char *value;
 
-                    read(infd, &targetlen, 4);
-                    target = malloc(targetlen + 1);
-                    memset(target, 0, targetlen + 1);
-                    read(infd, target, targetlen);
-                    read(infd, &valuelen, 4);
-                    value = malloc(valuelen + 1);
-                    memset(value, 0, valuelen + 1);
-                    read(infd, value, valuelen);
+                    target = read_string(infd);
+                    value = read_string(infd);
 
                     for (int i = 0; i < root->itemc; i++) {
                         if (strcmp(root->items[i]->name, target)==0) {
@@ -405,20 +386,12 @@ int daemon_main(char *menusi, char *menuso) {
                             }
                         }
                     }
-                } else if (param == 5) { 
-                    int targetlen;
-                    int valuelen;
+                } else if (param == 5) {
                     char *target;
                     char *value;
 
-                    read(infd, &targetlen, 4);
-                    target = malloc(targetlen + 1);
-                    memset(target, 0, targetlen + 1);
-                    read(infd, target, targetlen);
-                    read(infd, &valuelen, 4);
-                    value = malloc(valuelen + 1);
-                    memset(value, 0, valuelen + 1);
-                    read(infd, value, valuelen);
+                    target= read_string(infd);
+                    value = read_string(infd);
 
                     for (int i = 0; i < root->itemc; i++) {
                         if (strcmp(root->items[i]->name, target)==0) {
@@ -430,20 +403,12 @@ int daemon_main(char *menusi, char *menuso) {
                             }
                         }
                     }
-                } else if (param == 6) { 
-                    int targetlen;
-                    int valuelen;
+                } else if (param == 6) {
                     char *target;
                     char *value;
 
-                    read(infd, &targetlen, 4);
-                    target = malloc(targetlen + 1);
-                    memset(target, 0, targetlen + 1);
-                    read(infd, target, targetlen);
-                    read(infd, &valuelen, 4);
-                    value = malloc(valuelen + 1);
-                    memset(value, 0, valuelen + 1);
-                    read(infd, value, valuelen);
+                    target = read_string(infd);
+                    value = read_string(infd);
 
                     for (int i = 0; i < root->itemc; i++) {
                         if (strcmp(root->items[i]->name, target)==0) {
@@ -456,15 +421,11 @@ int daemon_main(char *menusi, char *menuso) {
                         }
                     }
                 } else if (param == 7) {
-                    int targetlen;
                     char* target;
                     char style;
 
                     read(infd, &style, 1);
-                    read(infd, &targetlen, 4);
-                    target = malloc(targetlen + 1);
-                    memset(target, 0, targetlen + 1);
-                    read(infd, target, targetlen);
+                    target = read_string(infd);
 
                     if (strcmp(target, "@default") == 0) {
                         default_selected_style = style;

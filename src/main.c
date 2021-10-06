@@ -31,6 +31,7 @@
 #endif
 
 #include "daemon.h"
+#include "ipc.h"
 
 int            id;
 char           menusi[256];
@@ -94,12 +95,7 @@ int main(int argc, char** argv) {
                 char c;
                 read(i, &c, 1);
                 if (c == '\x08') { // button pressed
-                    int namelen;
-                    read(i, &namelen, 4);
-                    char *name;
-                    name = malloc(namelen+1);
-                    memset(name, 0, namelen+1);
-                    read(i, name, namelen);
+                    char *name = read_string(i);
 
                     tcsetattr(0, 0, &backup);
  
@@ -119,105 +115,72 @@ int main(int argc, char** argv) {
     } else if (strcmp(argv[1], "button") == 0) {
         int io = open(menusi, O_WRONLY);
         write(io,"\x03\x01", 2);
-        int len = strlen(argv[2]);
-        write(io, &len, 4);
-        write(io, argv[2], len);
+        write_string(io, argv[2]);
         close(io);
         exit(0);
     } else if (strcmp(argv[1], "config") == 0) {
         if (strcmp(argv[3], "button.text") == 0) {
             int io  = open(menusi, O_WRONLY);
             write(io, "\x04\x01\x01", 3);
-            int len = strlen(argv[2]);
-            write(io, &len, 4);
-            write(io, argv[2], len);
-            int tlen= strlen(argv[4]);
-            write(io, &tlen, 4);
-            write(io, argv[4], tlen);
+            write_string(io, argv[2]);
+            write_string(io, argv[4]);
         } else if (strcmp(argv[3], "line") == 0) {
             int io = open(menusi, O_WRONLY);
             write(io, "\x04\x02\x01", 3);
             int l;
             sscanf(argv[4], "%i", &l);
-            int tl = strlen(argv[2]);
-            write(io, &tl,4);
-            write(io, argv[2], tl);
+            write_string(io, argv[2]);
             write(io, &l, 4);
         } else if (strcmp(argv[3], "col") == 0) {
             int io = open(menusi, O_WRONLY);
             write(io, "\x04\x02\x02", 3);
             int l;
             sscanf(argv[4], "%i", &l);
-            int tl = strlen(argv[2]);
-            write(io, &tl,4);
-            write(io, argv[2], tl);
+            write_string(io, argv[2]);
             write(io, &l, 4);
         } else if (strcmp(argv[3], "focus_up") == 0) {
             int io  = open(menusi, O_WRONLY);
             write(io, "\x04\x02\x03", 3);
-            int len = strlen(argv[2]);
-            write(io, &len, 4);
-            write(io, argv[2], len);
-            int tlen= strlen(argv[4]);
-            write(io, &tlen, 4);
-            write(io, argv[4], tlen);
+            write_string(io, argv[2]);
+            write_string(io, argv[4]);
         } else if (strcmp(argv[3], "focus_down") == 0) {
             int io  = open(menusi, O_WRONLY);
             write(io, "\x04\x02\x04", 3);
-            int len = strlen(argv[2]);
-            write(io, &len, 4);
-            write(io, argv[2], len);
-            int tlen= strlen(argv[4]);
-            write(io, &tlen, 4);
-            write(io, argv[4], tlen);
+            write_string(io, argv[2]);
+            write_string(io, argv[4]);
         } else if (strcmp(argv[3], "focus_right") == 0) {
             int io  = open(menusi, O_WRONLY);
             write(io, "\x04\x02\x05", 3);
-            int len = strlen(argv[2]);
-            write(io, &len, 4);
-            write(io, argv[2], len);
-            int tlen= strlen(argv[4]);
-            write(io, &tlen, 4);
-            write(io, argv[4], tlen);
+            write_string(io, argv[2]);
+            write_string(io, argv[4]);
         } else if (strcmp(argv[3], "focus_left") == 0) {
             int io  = open(menusi, O_WRONLY);
             write(io, "\x04\x02\x06", 3);
-            int len = strlen(argv[2]);
-            write(io, &len, 4);
-            write(io, argv[2], len);
-            int tlen= strlen(argv[4]);
-            write(io, &tlen, 4);
-            write(io, argv[4], tlen);
+            write_string(io, argv[2]);
+            write_string(io, argv[4]);
         } else if (strcmp(argv[3], "style.selected") == 0) {
             if (strcmp(argv[4], "arrows") == 0) {
                 int io = open(menusi, O_WRONLY);
                 write(io, "\x04\x02\x07\x01", 4);
-                int len = strlen(argv[2]);
-                write(io, &len, 4);
-                write(io, argv[2], len);
+                write_string(io, argv[2]);
             } else if (strcmp(argv[4], "highlight") == 0) {
                 int io = open(menusi, O_WRONLY);
                 write(io, "\x04\x02\x07\x02", 4);
-                int len = strlen(argv[2]);
-                write(io, &len, 4);
-                write(io, argv[2], len);
+                write_string(io, argv[2]);
             }
         }
     } else if (strcmp(argv[1], "test") == 0) {
         if (strcmp(argv[3], "button.waspressed") == 0) {
             int io  = open(menusi, O_WRONLY);
-            int len;
             char *name;
 
             write(io, "\x09", 1);
             close(io);
 
             io = open(menuso, O_RDONLY);
-            read(io, &len, 4);
-
-            name = malloc(len+1);
-            memset(name, 0, len+1);
-            read(io, name, len+1);
+            
+            name = read_string(io);
+            
             close(io);
         	if (strcmp(name, argv[2]) == 0) exit(0);
             else	              	        exit(1);

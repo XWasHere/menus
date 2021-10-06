@@ -15,9 +15,33 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-#ifndef MENUS_DAEMON_H
-#define MENUS_DAEMON_H
+#include "ipc.h"
 
-int daemon_main(char*, char*);
+#include <unistd.h>
+#include <string.h>
+#include <fcntl.h>
+#include <stdlib.h>
 
-#endif
+void write_int(int fd, int data) {
+    write(fd, &data, 4);
+}
+
+int read_int(int fd) {
+    int n;
+    read(fd, &n, 4);
+    return n;
+}
+
+void write_string(int fd, char *data) {
+    int len = strlen(data);
+    write(fd, &len, 4);
+    write(fd, data, len);
+}
+
+char* read_string(int fd) {
+    int len = read_int(fd);
+    char* data = malloc(len+1);
+    memset(data, 0, len+1);
+    read(fd, data, len);
+    return data;
+}
