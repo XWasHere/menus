@@ -32,6 +32,7 @@
 
 #include "daemon.h"
 #include "ipc.h"
+#include "color.h"
 
 int            id;
 char           menusi[256];
@@ -168,6 +169,30 @@ int main(int argc, char** argv) {
                 write(io, "\x04\x02\x07\x02", 4);
                 write_string(io, argv[2]);
             }
+        } else if (strcmp(argv[3], "style.color.fg") == 0) {
+            int io = open(menusi, O_WRONLY); // i wrote this with multiple cursors because its so similar lmao. kill me.
+            color_t* c = read_hex_color(argv[4]);
+            write(io, "\x04\x02\x08", 3);
+            write_string(io, argv[2]);
+            write_color(io, c);
+        } else if (strcmp(argv[3], "style.color.bg") == 0) {
+            int io = open(menusi, O_WRONLY); // i wrote this with multiple cursors because its so similar lmao. kill me.
+            color_t* c = read_hex_color(argv[4]);
+            write(io, "\x04\x02\x09", 3);
+            write_string(io, argv[2]);
+            write_color(io, c);
+        } else if (strcmp(argv[3], "style.color.fg.selected") == 0) {
+            int io = open(menusi, O_WRONLY); // i wrote this with multiple cursors because its so similar lmao. kill me.
+            color_t* c = read_hex_color(argv[4]);
+            write(io, "\x04\x02\x0a", 3); // we hit 10 opcodes for this property group wow
+            write_string(io, argv[2]);
+            write_color(io, c);
+        } else if (strcmp(argv[3], "style.color.bg.selected") == 0) {
+            int io = open(menusi, O_WRONLY); // i wrote this with multiple cursors because its so similar lmao. kill me.
+            color_t* c = read_hex_color(argv[4]);
+            write(io, "\x04\x02\x0b", 3);
+            write_string(io, argv[2]);
+            write_color(io, c);
         }
     } else if (strcmp(argv[1], "test") == 0) {
         if (strcmp(argv[3], "button.waspressed") == 0) {

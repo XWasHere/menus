@@ -26,6 +26,7 @@
 #include "daemon.h"
 #include "ansi.h"
 #include "ipc.h"
+#include "color.h"
 
 struct cursor_state {
     int line;
@@ -48,7 +49,9 @@ struct menuitem {
     int   type;
     
     struct color    *fg;
+    struct color    *fg_selected;
     struct color    *bg;
+    struct color    *bg_selected;
 
     int              manual_focus;
     struct menuitem *cdown;
@@ -68,21 +71,18 @@ struct menu {
 };
 typedef struct menu menu_t;
 
-struct color {
-    uint8_t r;
-    uint8_t g;
-    uint8_t b;
-    uint8_t alt; // for terminals that dont support RGB colors :>
-};
-typedef struct color color_t;
-
 int daemon_main(char *menusi, char *menuso) {
     menu_t *root = malloc(sizeof(menu_t));
     menuitem_t *selected;
     menuitem_t *defaultc;
 
     char default_selected_style = 1;
-
+    
+    color_t* default_fg = 0;
+    color_t* default_fg_selected = 0;
+    color_t* default_bg = 0;
+    color_t* default_bg_selected = 0;
+    
     int nextline = 1;
 
     mkfifo(menusi, 0777);
@@ -185,8 +185,32 @@ int daemon_main(char *menusi, char *menuso) {
                 cc = 1;
                 for (int i = 0; i < root->itemc; i++) {
                     if (root->items[i]->type == 0) {
+                        TEXT_RESET();
                         CURSOR_GOTO(root->items[i]->line, root->items[i]->col);
                         char style;
+                        if (root->items[i] == selected) {
+                            if (root->items[i]->fg_selected != 0) {
+                                apply_fg(root->items[i]->fg_selected);
+                            } else if (default_fg_selected != 0) {
+                                apply_fg(default_fg_selected);
+                            }
+                            if (root->items[i]->bg_selected != 0) {
+                                apply_bg(root->items[i]->bg_selected);
+                            } else if (default_bg_selected != 0) {
+                                apply_bg(default_bg_selected);
+                            }
+                        } else {
+                            if (root->items[i]->fg != 0) {
+                                apply_fg(root->items[i]->fg);
+                            } else if (default_fg != 0) {
+                                apply_fg(default_fg);
+                            }
+                            if (root->items[i]->bg != 0) {
+                                apply_bg(root->items[i]->bg);
+                            } else if (default_bg != 0) {
+                                apply_bg(default_bg);
+                            }
+                        }
                         if (root->items[i]->selected_style == 0) {
                             style = default_selected_style;
                         } else {
@@ -198,7 +222,6 @@ int daemon_main(char *menusi, char *menuso) {
                                 root->items[i]->button->text,
                                 (root->items[i] == selected) ? '<' : ' ');
                         } else if (style == 2) {
-                            TEXT_RESET();
                             if (root->items[i] == selected) {
                                 TEXT_INVERT();
                             }
@@ -433,6 +456,54 @@ int daemon_main(char *menusi, char *menuso) {
                         for (int i = 0; i < root->itemc; i++) {
                             if (strcmp(root->items[i]->name, target) == 0) {
                                 root->items[i]->selected_style = style;
+                            }
+                        }
+                    }
+                } else if (param == 8) {
+                    char* target = read_string(infd);
+                    color_t* c = read_color(infd);
+                    if (strcmp(target, "@default") == 0) {
+                        default_fg = c;
+                    } else {
+                        for (int i = 0; i < root->itemc; i++) {
+                            if (strcmp(root->items[i]->name, target) == 0) {
+                                root->items[i]->fg = c;
+                            }
+                        }
+                    }
+                } else if (param == 9) {
+                    char* target = read_string(infd);
+                    color_t* c = read_color(infd);
+                    if (strcmp(target, "@default") == 0) {
+                        default_bg = c;
+                    } else {
+                        for (int i = 0; i < root->itemc; i++) {
+                            if (strcmp(root->items[i]->name, target) == 0) {
+                                root->items[i]->bg = c;
+                            }
+                        }
+                    }
+                } else if (param == 10) {
+                    char* target = read_string(infd);
+                    color_t* c = read_color(infd);
+                    if (strcmp(target, "@default") == 0) {
+                        default_fg_selected = c;
+                    } else {
+                        for (int i = 0; i < root->itemc; i++) {
+                            if (strcmp(root->items[i]->name, target) == 0) {
+                                root->items[i]->fg_selected = c;
+                            }
+                        }
+                    }
+                } else if (param == 11) {
+                    char* target = read_string(infd);
+                    color_t* c = read_color(infd);
+                    if (strcmp(target, "@default") == 0) {
+                        default_bg_selected = c;
+                    } else {
+                        for (int i = 0; i < root->itemc; i++) {
+                            if (strcmp(root->items[i]->name, target) == 0) {
+                                root->items[i]->bg_selected = c;
                             }
                         }
                     }

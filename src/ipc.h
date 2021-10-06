@@ -18,9 +18,14 @@
 #ifndef MENUS_IPC_H
 #define MENUS_IPC_H
 
+#include "color.h"
+
 void write_string(int fd, char* data);
+void write_int(int fd, int data);
+void write_color(int fd, color_t* data);
 
 int read_int(int fd);
 char* read_string(int fd);
+color_t* read_color(int fd);
 
 #endif

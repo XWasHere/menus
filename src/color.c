@@ -15,44 +15,25 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-#include "ipc.h"
-#include "color.h"
 
-#include <unistd.h>
-#include <string.h>
-#include <fcntl.h>
+#include "color.h"
+#include "ansi.h"
+
+#include <stdio.h>
 #include <stdlib.h>
 
-void write_int(int fd, int data) {
-    write(fd, &data, 4);
+color_t *read_hex_color(char *stuff) {
+    color_t* c = malloc(sizeof(color_t));
+
+    sscanf(stuff, "%2x%2x%2x", &c->r, &c->g, &c->b);
+
+    return c;
 }
 
-int read_int(int fd) {
-    int n;
-    read(fd, &n, 4);
-    return n;
+void apply_fg(color_t *c) {
+    TEXT_RGB_FG(c->r, c->g, c->b);
 }
 
-void write_string(int fd, char *data) {
-    int len = strlen(data);
-    write(fd, &len, 4);
-    write(fd, data, len);
-}
-
-char* read_string(int fd) {
-    int len = read_int(fd);
-    char* data = malloc(len+1);
-    memset(data, 0, len+1);
-    read(fd, data, len);
-    return data;
-}
-
-void write_color(int fd, color_t* data) {
-    write(fd, data, 4); // you thought this would special. 
-}
-
-color_t* read_color(int fd) {
-    color_t* data = malloc(sizeof(color_t));
-    read(fd, data, 4);
-    return data;
+void apply_bg(color_t *c) {
+    TEXT_RGB_BG(c->r, c->g, c->b);
 }

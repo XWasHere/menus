@@ -15,34 +15,21 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-#ifndef MENUS_ANSI_H
-#define MENUS_ANSI_H
+#ifndef MENUS_COLOR_H
+#define MENUS_COLOR_H
 
-#include <stdio.h>
+#include <stdint.h>
 
-// enable the alternate screen buffer
-#define ALTBUF_ON() printf("\e[?1049h")
+struct color {
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
+    uint8_t alt; // for terminals that dont support RGB colors :>
+};
+typedef struct color color_t;
 
-// disable the alternate screen buffer
-#define ALTBUF_OFF() printf("\e[?1049l")
-
-// remove text styling
-#define TEXT_RESET() printf("\e[0m")
-
-// inverts text
-#define TEXT_INVERT() printf("\e[7m")
-
-// sets the color
-#define TEXT_RGB_FG(r, g, b) printf("\e[38;2;%i;%i;%im", r, g, b)
-#define TEXT_RGB_BG(r, g, b) printf("\e[48;2;%i;%i;%im", r, g, b)
-
-// moves the cursor
-#define CURSOR_GOTO(row, col) printf("\e[%i;%iH", row, col)
-
-// saves the cursor position
-#define CURSOR_SAVE() printf("\e7")
-
-// restores the cursor position
-#define CURSOR_LOAD() printf("\e8")
+color_t *read_hex_color(char*);
+void apply_fg(color_t* color);
+void apply_bg(color_t* color);
 
 #endif
