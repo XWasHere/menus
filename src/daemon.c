@@ -72,6 +72,8 @@ struct menu {
 typedef struct menu menu_t;
 
 int daemon_main(char *menusi, char *menuso) {
+    int mode = 0;
+
     menu_t *root = malloc(sizeof(menu_t));
     menuitem_t *selected;
     menuitem_t *defaultc;
@@ -96,8 +98,10 @@ int daemon_main(char *menusi, char *menuso) {
         if (msg[0] == 1) {
             exit(0);
         } else if (msg[0] == 2) {
-            // set some crap
             selected = defaultc;
+            
+            pre_render:;
+            // set some crap
             int cr = 0;
             int cc = 0;
             int outfd = open(menuso, O_WRONLY);
@@ -142,6 +146,8 @@ int daemon_main(char *menusi, char *menuso) {
                             }
                         }
                     } else if (c == 13) {
+                        mode = 1;
+
                         char tmp = '\x08';
 
                         write(outfd, &tmp, 1);
@@ -166,6 +172,7 @@ int daemon_main(char *menusi, char *menuso) {
                             outfd = open(menuso, O_WRONLY);
                         } else if (tmp == 4) {
                             goto config;
+                            post_config:;
                         } else if (tmp == 9) { // get the pressed button
                             outfd = open(menuso, O_WRONLY);
                             write_string(outfd,selected->name);
@@ -235,6 +242,7 @@ int daemon_main(char *menusi, char *menuso) {
                         cr++;
                     }
                 }
+
             }
 
             stop:
@@ -512,6 +520,7 @@ int daemon_main(char *menusi, char *menuso) {
                     }
                 }
             }
+            if (mode) goto post_config;
         }
         free(msg);
         close(infd);
