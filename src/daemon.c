@@ -164,6 +164,8 @@ int daemon_main(char *menusi, char *menuso) {
                             exit(0);
                         } else if (tmp == 2) {
                             outfd = open(menuso, O_WRONLY);
+                        } else if (tmp == 4) {
+                            goto config;
                         } else if (tmp == 9) { // get the pressed button
                             outfd = open(menuso, O_WRONLY);
                             write_string(outfd,selected->name);
@@ -279,6 +281,7 @@ int daemon_main(char *menusi, char *menuso) {
                 nextline++;
             }
         } else if (msg[0] == 4) {
+            config:;
             char targettype;
             char param;
             read(infd, &targettype, 1);

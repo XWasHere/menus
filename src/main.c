@@ -195,7 +195,18 @@ int main(int argc, char** argv) {
             write_color(io, c);
         }
     } else if (strcmp(argv[1], "test") == 0) {
-        if (strcmp(argv[3], "button.waspressed") == 0) {
+        if (strcmp(argv[3], "pressed") == 0) {
+            int io  = open(menusi, O_WRONLY);
+            char *name;
+
+            write(io, "\x09", 1);
+            close(io);
+
+            io = open(menuso, O_RDONLY);
+            
+            name = read_string(io);
+            printf("%s", name);
+        } else if (strcmp(argv[3], "button.waspressed") == 0) {
             int io  = open(menusi, O_WRONLY);
             char *name;
 
