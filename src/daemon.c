@@ -272,7 +272,7 @@ int daemon_main(char *menusi, char *menuso) {
                 item->manual_focus       = 0;
                 btn->text                = "";
                 btn->text_len            = 1;
-                root->items              = realloc(root->items, sizeof(menuitem_t*) * root->itemc);
+                root->items              = realloc(root->items, sizeof(menuitem_t*) * (root->itemc+1));
                 root->items[root->itemc] = item;
                 root->itemc++;
 
