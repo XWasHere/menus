@@ -1,0 +1,263 @@
+#!/bin/sh
+
+menus=../build/menus;
+
+# set up the colors
+r=0;
+g=0;
+b=0;
+
+# start a menus daemon
+$menus init;
+
+# red
+$menus button rp001;
+$menus button rp010;
+$menus button rp100;
+$menus button rm001;
+$menus button rm010;
+$menus button rm100;
+$menus button rdisp;
+
+# green
+$menus button gp001;
+$menus button gp010;
+$menus button gp100;
+$menus button gm001;
+$menus button gm010;
+$menus button gm100;
+$menus button gdisp;
+
+# blue
+$menus button bp001;
+$menus button bp010;
+$menus button bp100;
+$menus button bm001;
+$menus button bm010;
+$menus button bm100;
+$menus button bdisp;
+
+# result
+$menus button cdisp;
+$menus button ctext;
+
+# quit button
+$menus button quit;
+
+# put some text on it
+$menus config rp001 button.text "+1";
+$menus config rp010 button.text "+10";
+$menus config rp100 button.text "+100";
+$menus config rm001 button.text "-1";
+$menus config rm010 button.text "-10";
+$menus config rm100 button.text "-100";
+$menus config gp001 button.text "+1";
+$menus config gp010 button.text "+10";
+$menus config gp100 button.text "+100";
+$menus config gm001 button.text "-1";
+$menus config gm010 button.text "-10";
+$menus config gm100 button.text "-100";
+$menus config bp001 button.text "+1";
+$menus config bp010 button.text "+10";
+$menus config bp100 button.text "+100"; # i dont know where the fuck this went
+$menus config bm001 button.text "-1";
+$menus config bm010 button.text "-10";
+$menus config bm100 button.text "-100";
+$menus config quit  button.text "Exit";
+$menus config cdisp button.text "                                  ";
+
+#position the buttons
+$menus config rp001 line 1;
+$menus config rp010 line 1;
+$menus config rp100 line 1;
+$menus config rm001 line 1;
+$menus config rm010 line 1;
+$menus config rm100 line 1;
+$menus config rdisp line 1;
+
+$menus config rp001 col 1;
+$menus config rp010 col 6;
+$menus config rp100 col 11;
+$menus config rdisp col 16;
+$menus config rm001 col 21;
+$menus config rm010 col 25;
+$menus config rm100 col 31;
+
+$menus config gp001 line 2;
+$menus config gp010 line 2;
+$menus config gp100 line 2;
+$menus config gm001 line 2;
+$menus config gm010 line 2;
+$menus config gm100 line 2;
+$menus config gdisp line 2;
+
+$menus config gp001 col 1;
+$menus config gp010 col 6;
+$menus config gp100 col 11;
+$menus config gdisp col 16;
+$menus config gm001 col 21;
+$menus config gm010 col 25;
+$menus config gm100 col 31;
+
+$menus config bp001 line 3;
+$menus config bp010 line 3;
+$menus config bp100 line 3;
+$menus config bm001 line 3;
+$menus config bm010 line 3;
+$menus config bm100 line 3;
+$menus config bdisp line 3;
+
+$menus config bp001 col 1;
+$menus config bp010 col 6;
+$menus config bp100 col 11;
+$menus config bdisp col 16;
+$menus config bm001 col 21;
+$menus config bm010 col 25;
+$menus config bm100 col 31;
+
+$menus config ctext line 5;
+$menus config ctext col 15;
+
+$menus config cdisp line 4;
+$menus config cdisp col 1;
+
+$menus config quit  line 6;
+$menus config quit  col  16;
+
+# focus paths
+$menus config rp001 focus_down gp001;
+$menus config gp001 focus_down bp001;
+$menus config bp001 focus_down quit;
+
+$menus config rp010 focus_down gp010;
+$menus config gp010 focus_down bp010;
+$menus config bp010 focus_down quit;
+
+$menus config rp100 focus_down gp100;
+$menus config gp100 focus_down bp100;
+$menus config bp100 focus_down quit;
+
+$menus config rm001 focus_down gm001;
+$menus config gm001 focus_down bm001;
+$menus config bm001 focus_down quit;
+
+$menus config rm010 focus_down gm010;
+$menus config gm010 focus_down bm010;
+$menus config bm010 focus_down quit;
+
+$menus config rm100 focus_down gm100;
+$menus config gm100 focus_down bm100;
+$menus config bm100 focus_down quit;
+
+$menus config quit  focus_down rp001;
+
+$menus config bp001 focus_up gp001;
+$menus config gp001 focus_up rp001;
+$menus config rp001 focus_up quit;
+
+$menus config bp010 focus_up gp010;
+$menus config gp010 focus_up rp010;
+$menus config rp010 focus_up quit;
+
+$menus config bp100 focus_up gp100;
+$menus config gp100 focus_up rp100;
+$menus config rp100 focus_up quit;
+
+$menus config bm001 focus_up gm001;
+$menus config gm001 focus_up rm001;
+$menus config rm001 focus_up quit;
+
+$menus config bm010 focus_up gm010;
+$menus config gm010 focus_up rm010;
+$menus config rm010 focus_up quit;
+
+$menus config bm100 focus_up gm100;
+$menus config gm100 focus_up rm100;
+$menus config rm100 focus_up quit;
+
+$menus config quit  focus_up bp001;
+
+$menus config rp001 focus_right rp010;
+$menus config rp010 focus_right rp100;
+$menus config rp100 focus_right rm001;
+$menus config rm001 focus_right rm010;
+$menus config rm010 focus_right rm100;
+$menus config rm100 focus_right rp001;
+
+$menus config gp001 focus_right gp010;
+$menus config gp010 focus_right gp100;
+$menus config gp100 focus_right gm001;
+$menus config gm001 focus_right gm010;
+$menus config gm010 focus_right gm100;
+$menus config gm100 focus_right gp001;
+
+$menus config bp001 focus_right bp010;
+$menus config bp010 focus_right bp100;
+$menus config bp100 focus_right bm001;
+$menus config bm001 focus_right bm010;
+$menus config bm010 focus_right bm100;
+$menus config bm100 focus_right bp001;
+
+$menus config rm100 focus_left rm010;
+$menus config rm010 focus_left rm001;
+$menus config rm001 focus_left rp100;
+$menus config rp100 focus_left rp010;
+$menus config rp010 focus_left rp001;
+$menus config rp001 focus_left rm100;
+
+$menus config gm100 focus_left gm010;
+$menus config gm010 focus_left gm001;
+$menus config gm001 focus_left gp100;
+$menus config gp100 focus_left gp010;
+$menus config gp010 focus_left gp001;
+$menus config gp001 focus_left gm100;
+
+$menus config bm100 focus_left bm010;
+$menus config bm010 focus_left bm001;
+$menus config bm001 focus_left bp100;
+$menus config bp100 focus_left bp010;
+$menus config bp010 focus_left bp001;
+$menus config bp001 focus_left bm100;
+
+# style
+$menus config @default style.selected highlight;
+
+# main loop
+while true; do {
+    $menus config rdisp button.text " `printf "%02x" $r` ";
+    $menus config gdisp button.text " `printf "%02x" $g` ";
+    $menus config bdisp button.text " `printf "%02x" $b` ";
+    $menus config ctext button.text `printf "%02x%02x%02x" $r $g $b`;
+
+    $menus config rdisp style.color.bg `printf "%02x0000" $r`;
+    $menus config gdisp style.color.bg `printf "00%02x00" $g`;
+    $menus config bdisp style.color.bg `printf "0000%02x" $b`;
+    $menus config cdisp style.color.bg `printf "%02x%02x%02x" $r $g $b`;
+
+    $menus display;
+
+    p=`$menus test @global pressed`;
+
+    if   ([ "$p" == "rp001" ]) then if ([ $r -lt 255 ]) then r=`expr $r + 1`; fi;
+    elif ([ "$p" == "rp010" ]) then if ([ $r -le 245 ]) then r=`expr $r + 10`; fi;
+    elif ([ "$p" == "rp100" ]) then if ([ $r -le 155 ]) then r=`expr $r + 100`; fi;
+    elif ([ "$p" == "rm001" ]) then if ([ $r -ge 1   ]) then r=`expr $r - 1`; fi;
+    elif ([ "$p" == "rm010" ]) then if ([ $r -ge 10  ]) then r=`expr $r - 10`; fi;
+    elif ([ "$p" == "rm100" ]) then if ([ $r -ge 100 ]) then r=`expr $r - 100`; fi;
+    elif ([ "$p" == "gp001" ]) then if ([ $g -lt 255 ]) then g=`expr $g + 1`; fi;
+    elif ([ "$p" == "gp010" ]) then if ([ $g -le 245 ]) then g=`expr $g + 10`; fi;
+    elif ([ "$p" == "gp100" ]) then if ([ $g -le 155 ]) then g=`expr $g + 100`; fi;
+    elif ([ "$p" == "gm001" ]) then if ([ $g -ge 1   ]) then g=`expr $g - 1`; fi;
+    elif ([ "$p" == "gm010" ]) then if ([ $g -ge 10  ]) then g=`expr $g - 10`; fi;
+    elif ([ "$p" == "gm100" ]) then if ([ $g -ge 100 ]) then g=`expr $g - 100`; fi;
+    elif ([ "$p" == "bp001" ]) then if ([ $b -lt 255 ]) then b=`expr $b + 1`; fi;
+    elif ([ "$p" == "bp010" ]) then if ([ $b -le 245 ]) then b=`expr $b + 10`; fi;
+    elif ([ "$p" == "bp100" ]) then if ([ $b -le 155 ]) then b=`expr $b + 100`; fi;
+    elif ([ "$p" == "bm001" ]) then if ([ $b -ge 1   ]) then b=`expr $b - 1`; fi;
+    elif ([ "$p" == "bm010" ]) then if ([ $b -ge 10  ]) then b=`expr $b - 10`; fi;
+    elif ([ "$p" == "bm100" ]) then if ([ $b -ge 100 ]) then b=`expr $b - 100`; fi;
+    elif ([ "$p" == "quit"  ]) then {
+        $menus exit;
+        exit;
+    } fi;
+}; done;

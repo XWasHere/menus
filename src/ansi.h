@@ -45,4 +45,10 @@
 // restores the cursor position
 #define CURSOR_LOAD() printf("\e8")
 
+// hides the cursor
+#define CURSOR_HIDE() printf("\e[?25l")
+
+// shows the cursor
+#define CURSOR_SHOW() printf("\e[?25h")
+
 #endif

@@ -114,6 +114,7 @@ int daemon_main(char *menusi, char *menuso) {
             // save state
             CURSOR_SAVE();
             ALTBUF_ON();
+            CURSOR_HIDE();
             
             goto render;
             
@@ -164,6 +165,7 @@ int daemon_main(char *menusi, char *menuso) {
                         read(infd, &tmp, 1);
 
                         if (tmp == 1) {
+                            CURSOR_SHOW();
                             ALTBUF_OFF();
                             CURSOR_LOAD();
                             close(outfd);
@@ -249,6 +251,7 @@ int daemon_main(char *menusi, char *menuso) {
             close(outfd);
             stop2:
             // load state
+            CURSOR_SHOW();
             ALTBUF_OFF();
             CURSOR_LOAD();
         } else if (msg[0] == 3) {
