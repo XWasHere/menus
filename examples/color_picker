@@ -238,24 +238,24 @@ while true; do {
 
     p=`$menus test @global pressed`;
 
-    if   ([ "$p" == "rp001" ]) then if ([ $r -lt 255 ]) then r=`expr $r + 1`; fi;
-    elif ([ "$p" == "rp010" ]) then if ([ $r -le 245 ]) then r=`expr $r + 10`; fi;
-    elif ([ "$p" == "rp100" ]) then if ([ $r -le 155 ]) then r=`expr $r + 100`; fi;
-    elif ([ "$p" == "rm001" ]) then if ([ $r -ge 1   ]) then r=`expr $r - 1`; fi;
-    elif ([ "$p" == "rm010" ]) then if ([ $r -ge 10  ]) then r=`expr $r - 10`; fi;
-    elif ([ "$p" == "rm100" ]) then if ([ $r -ge 100 ]) then r=`expr $r - 100`; fi;
-    elif ([ "$p" == "gp001" ]) then if ([ $g -lt 255 ]) then g=`expr $g + 1`; fi;
-    elif ([ "$p" == "gp010" ]) then if ([ $g -le 245 ]) then g=`expr $g + 10`; fi;
-    elif ([ "$p" == "gp100" ]) then if ([ $g -le 155 ]) then g=`expr $g + 100`; fi;
-    elif ([ "$p" == "gm001" ]) then if ([ $g -ge 1   ]) then g=`expr $g - 1`; fi;
-    elif ([ "$p" == "gm010" ]) then if ([ $g -ge 10  ]) then g=`expr $g - 10`; fi;
-    elif ([ "$p" == "gm100" ]) then if ([ $g -ge 100 ]) then g=`expr $g - 100`; fi;
-    elif ([ "$p" == "bp001" ]) then if ([ $b -lt 255 ]) then b=`expr $b + 1`; fi;
-    elif ([ "$p" == "bp010" ]) then if ([ $b -le 245 ]) then b=`expr $b + 10`; fi;
-    elif ([ "$p" == "bp100" ]) then if ([ $b -le 155 ]) then b=`expr $b + 100`; fi;
-    elif ([ "$p" == "bm001" ]) then if ([ $b -ge 1   ]) then b=`expr $b - 1`; fi;
-    elif ([ "$p" == "bm010" ]) then if ([ $b -ge 10  ]) then b=`expr $b - 10`; fi;
-    elif ([ "$p" == "bm100" ]) then if ([ $b -ge 100 ]) then b=`expr $b - 100`; fi;
+    if   ([ "$p" == "rp001" ]) then if ([ $r -lt 255 ]) then r=`expr $r + 1`; else r=255; fi;
+    elif ([ "$p" == "rp010" ]) then if ([ $r -le 245 ]) then r=`expr $r + 10`; else r=255; fi;
+    elif ([ "$p" == "rp100" ]) then if ([ $r -le 155 ]) then r=`expr $r + 100`; else r=255; fi;
+    elif ([ "$p" == "rm001" ]) then if ([ $r -ge 1   ]) then r=`expr $r - 1`; else r=0; fi;
+    elif ([ "$p" == "rm010" ]) then if ([ $r -ge 10  ]) then r=`expr $r - 10`; else r=0; fi;
+    elif ([ "$p" == "rm100" ]) then if ([ $r -ge 100 ]) then r=`expr $r - 100`; else r=0; fi;
+    elif ([ "$p" == "gp001" ]) then if ([ $g -lt 255 ]) then g=`expr $g + 1`; else g=255; fi;
+    elif ([ "$p" == "gp010" ]) then if ([ $g -le 245 ]) then g=`expr $g + 10`; else g=255; fi;
+    elif ([ "$p" == "gp100" ]) then if ([ $g -le 155 ]) then g=`expr $g + 100`; else g=255; fi;
+    elif ([ "$p" == "gm001" ]) then if ([ $g -ge 1   ]) then g=`expr $g - 1`; else g=0; fi;
+    elif ([ "$p" == "gm010" ]) then if ([ $g -ge 10  ]) then g=`expr $g - 10`; else g=0; fi;
+    elif ([ "$p" == "gm100" ]) then if ([ $g -ge 100 ]) then g=`expr $g - 100`; else g=0; fi;
+    elif ([ "$p" == "bp001" ]) then if ([ $b -lt 255 ]) then b=`expr $b + 1`; else b=255; fi;
+    elif ([ "$p" == "bp010" ]) then if ([ $b -le 245 ]) then b=`expr $b + 10`; else b=255; fi;
+    elif ([ "$p" == "bp100" ]) then if ([ $b -le 155 ]) then b=`expr $b + 100`; else b=255; fi;
+    elif ([ "$p" == "bm001" ]) then if ([ $b -ge 1   ]) then b=`expr $b - 1`; else b=0; fi;
+    elif ([ "$p" == "bm010" ]) then if ([ $b -ge 10  ]) then b=`expr $b - 10`; else b=0; fi;
+    elif ([ "$p" == "bm100" ]) then if ([ $b -ge 100 ]) then b=`expr $b - 100`; else b=0; fi;
     elif ([ "$p" == "quit"  ]) then {
         $menus exit;
         exit;
