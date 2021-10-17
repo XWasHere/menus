@@ -5,25 +5,45 @@ menus scripting language for creating the ui thing
 syntax concept:
 
 ```
-// Initializers specify properties in a config file sorta format
-Menu menu {
-    Button text {
+Menu menu <= {
+    Button text <= {
         text = "Hello World!";
         x = 0;
         y = 0;
     };
 
-    Button ok {
+    Button ok <= {
         text = "ok";
         x = 7;
         y = 1;
-        onpress() {
+        void onpress() {
             int; // interupt (pass control to the shell script, then it does stuff then resumes here)
+            return;
         };
     };
 };
 
-main() {
-    display menu;
+void main() {
+    display(menu);
 };
+```
+
+```
+namestartchar = "a" | ... | "z" | "A" | ... | "Z"
+namechar      = namestartchar | "1" ... "9"
+name          = namestartchar namechar*
+digit         = "0" | ... | "9"
+number        = digit+
+string        = """ ANY_CHAR* """
+value         = name | number | string
+call          = name name*
+assignment    = name = value
+functionbody  = "{" op* "}"
+type          = "void" | "number" | "string" | name
+decl          = type name ( "=" value | initializer )?
+argdecl       = type name
+function      = type name ( "(" ")" | "(" decl ")" | "(" ( decl "," )+ decl ")" ) functionbody
+initializer   = "<=" "{" ( ( decl | assignment | function ) ";" )* "}"
+op            = ( call | assignment | decl | "return" | "int" ) ";"
+script        = ( decl | function )
 ```
