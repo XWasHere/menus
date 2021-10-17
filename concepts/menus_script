@@ -1,0 +1,29 @@
+hmmmmmm...
+what if
+menus scripting language for creating the ui thing
+
+syntax concept:
+
+```
+// Initializers specify properties in a config file sorta format
+Menu menu {
+    Button text {
+        text = "Hello World!";
+        x = 0;
+        y = 0;
+    };
+
+    Button ok {
+        text = "ok";
+        x = 7;
+        y = 1;
+        onpress() {
+            int; // interupt (pass control to the shell script, then it does stuff then resumes here)
+        };
+    };
+};
+
+main() {
+    display menu;
+};
+```
