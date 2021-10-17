@@ -5,14 +5,14 @@ menus scripting language for creating the ui thing
 syntax concept:
 
 ```
-Menu menu <= {
-    Button text <= {
+Menu menu {
+    Button text {
         text = "Hello World!";
         x = 0;
         y = 0;
     };
 
-    Button ok <= {
+    Button ok {
         text = "ok";
         x = 7;
         y = 1;
@@ -43,7 +43,7 @@ type          = "void" | "number" | "string" | name
 decl          = type name ( "=" value | initializer )?
 argdecl       = type name
 function      = type name ( "(" ")" | "(" decl ")" | "(" ( decl "," )+ decl ")" ) functionbody
-initializer   = "<=" "{" ( ( decl | assignment | function ) ";" )* "}"
+initializer   = "{" ( ( decl | assignment | function ) ";" )* "}"
 op            = ( call | assignment | decl | "return" | "int" ) ";"
 script        = ( decl | function )
 ```
