@@ -81,12 +81,10 @@ void menus_display(int argc, char** argv) {
             read(0, &c, 1);
 
             if (c == 3) {
-                char o = '\x07';
-                write(io, &o ,1);
+                write(io, "\x07" ,1);
                 break;
             } else {
-                char o = '\x06';
-                write(io, &o, 1);
+                write(io, "\x06", 1);
                 write(io, &c, 1);
             }
         }
@@ -123,80 +121,69 @@ void menus_button(int argc, char **argv) {
 }
 
 void menus_config(int argc, char** argv) {
+    int io = open(menusi, O_WRONLY);
     if (strcmp(argv[3], "button.text") == 0) {
-        int io  = open(menusi, O_WRONLY);
         write(io, "\x04\x01\x01", 3);
         write_string(io, argv[2]);
         write_string(io, argv[4]);
     } else if (strcmp(argv[3], "line") == 0) {
-        int io = open(menusi, O_WRONLY);
         write(io, "\x04\x02\x01", 3);
         int l;
         sscanf(argv[4], "%i", &l);
         write_string(io, argv[2]);
         write(io, &l, 4);
     } else if (strcmp(argv[3], "col") == 0) {
-        int io = open(menusi, O_WRONLY);
         write(io, "\x04\x02\x02", 3);
         int l;
         sscanf(argv[4], "%i", &l);
         write_string(io, argv[2]);
         write(io, &l, 4);
     } else if (strcmp(argv[3], "focus_up") == 0) {
-        int io  = open(menusi, O_WRONLY);
         write(io, "\x04\x02\x03", 3);
         write_string(io, argv[2]);
         write_string(io, argv[4]);
     } else if (strcmp(argv[3], "focus_down") == 0) {
-        int io  = open(menusi, O_WRONLY);
         write(io, "\x04\x02\x04", 3);
         write_string(io, argv[2]);
         write_string(io, argv[4]);
     } else if (strcmp(argv[3], "focus_right") == 0) {
-        int io  = open(menusi, O_WRONLY);
         write(io, "\x04\x02\x05", 3);
         write_string(io, argv[2]);
         write_string(io, argv[4]);
     } else if (strcmp(argv[3], "focus_left") == 0) {
-        int io  = open(menusi, O_WRONLY);
         write(io, "\x04\x02\x06", 3);
         write_string(io, argv[2]);
         write_string(io, argv[4]);
     } else if (strcmp(argv[3], "style.selected") == 0) {
         if (strcmp(argv[4], "arrows") == 0) {
-            int io = open(menusi, O_WRONLY);
             write(io, "\x04\x02\x07\x01", 4);
             write_string(io, argv[2]);
         } else if (strcmp(argv[4], "highlight") == 0) {
-            int io = open(menusi, O_WRONLY);
             write(io, "\x04\x02\x07\x02", 4);
             write_string(io, argv[2]);
         }
     } else if (strcmp(argv[3], "style.color.fg") == 0) {
-        int io = open(menusi, O_WRONLY); // i wrote this with multiple cursors because its so similar lmao. kill me.
         color_t* c = read_hex_color(argv[4]);
         write(io, "\x04\x02\x08", 3);
         write_string(io, argv[2]);
         write_color(io, c);
     } else if (strcmp(argv[3], "style.color.bg") == 0) {
-        int io = open(menusi, O_WRONLY); // i wrote this with multiple cursors because its so similar lmao. kill me.
         color_t* c = read_hex_color(argv[4]);
         write(io, "\x04\x02\x09", 3);
         write_string(io, argv[2]);
         write_color(io, c);
     } else if (strcmp(argv[3], "style.color.fg.selected") == 0) {
-        int io = open(menusi, O_WRONLY); // i wrote this with multiple cursors because its so similar lmao. kill me.
         color_t* c = read_hex_color(argv[4]);
         write(io, "\x04\x02\x0a", 3); // we hit 10 opcodes for this property group wow
         write_string(io, argv[2]);
         write_color(io, c);
     } else if (strcmp(argv[3], "style.color.bg.selected") == 0) {
-        int io = open(menusi, O_WRONLY); // i wrote this with multiple cursors because its so similar lmao. kill me.
         color_t* c = read_hex_color(argv[4]);
         write(io, "\x04\x02\x0b", 3);
         write_string(io, argv[2]);
         write_color(io, c);
     }
+    close(menusi);
 }
 
 void menus_test(int argc, char** argv) {

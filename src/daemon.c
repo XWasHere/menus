@@ -149,9 +149,9 @@ int daemon_main(char *menusi, char *menuso) {
                     } else if (c == 13) {
                         mode = 1;
 
-                        char tmp = '\x08';
+                        char tmp;
 
-                        write(outfd, &tmp, 1);
+                        write(outfd, "\x08", 1);
                         write_string(outfd, selected->name);
 
                         close(outfd);
