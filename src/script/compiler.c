@@ -266,13 +266,21 @@ char* compile(char* src) {
         } else if (TIS(i, 9)) {
             CSP--;
             printf(")]\n");
-            WR_OP_CALL_ARGS_END(C, P, L);
+            WR_OP_END_CALL_ARGS(C, P, L);
         } else if (TIS(i, 13)) {
             if (CST[CSP] == CS_ARGS) {
                 WR_OP_CALL_ARG_REF(C, P, L, T[i].str);
             }
             printf("[REF \"%s\"]", T[i].str);
+        } else {
+            
         }
+        printf("L = 0x%08x\nP = 0x%08x\n", L, P);
+        printf("compiler dump\n");
+        for (int i = 0; i < L; i++) {
+            printf("%c", C[i]);
+        }
+        printf("\n");
     }
 
     if (arg_dump_code) {

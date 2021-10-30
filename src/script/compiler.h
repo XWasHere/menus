@@ -5,7 +5,6 @@
 
 struct script_header {
     uint32_t version;
-    uint32_t entry;
 };
 typedef struct script_header script_header_t;
 
