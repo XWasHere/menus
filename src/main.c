@@ -33,6 +33,8 @@
 #include "daemon.h"
 #include "ipc.h"
 #include "color.h"
+#include "args.h"
+#include "script/compiler.h"
 
 int            id;
 char           menusi[256];
@@ -224,6 +226,12 @@ void menus_help(int argc, char** argv) {
 }
 
 int main(int argc, char** argv) {
+    parse_args(argc, argv);
+    if (arg_has_src) {
+        compile(arg_src);
+    }
+    return 0;
+
 	if (argc == 1) menus_help(argc, argv);
     id = getppid();
     sprintf(menusi, "/tmp/.menus.%i.i", id);

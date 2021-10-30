@@ -1,0 +1,26 @@
+build/menus --dump-code --src '
+Menu menu {
+    Button text {
+        text = "Hello World!";
+        x = 0;
+        y = 0;
+    };
+
+    Button ok {
+        text = "ok";
+        x = 7;
+        y = 1;
+        void onpress() {
+            int; // interupt (pass control to the shell script, then it does stuff then resumes here)
+            return;
+        };
+    };
+};
+
+void main() {
+    display(menu);
+};
+'
+hexdump a.dmp --canonical
+
+build/menus call main
