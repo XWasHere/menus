@@ -17,9 +17,9 @@ struct parse_token_s1 {
 };
 
 char* compile(char* src) {
-    printf("reading source\n");
-    printf("%s\n", src);
-    printf("starting menus stage 1 parser\n");
+//    printf("reading source\n");
+//    printf("%s\n", src);
+//    printf("starting menus stage 1 parser\n");
 
     struct parse_token_s1* p1tokens = malloc(sizeof(struct parse_token_s1));
     int                    p1count  = 0;
@@ -39,7 +39,7 @@ char* compile(char* src) {
         } else if (comment == 1) {
             if (src[i] == '\n') {
                 comment = 0;
-                printf("\n");
+//                printf("\n");
             }
         } else if (src[i] == '"') {
             if (smode == 0) {
@@ -54,7 +54,7 @@ char* compile(char* src) {
                 strcpy(p1tokens[p1count].str, str);
                 p1tokens[p1count].type = 1;
                 p1count++;
-                printf("[STRING \"%s\"]", str);
+//                printf("[STRING \"%s\"]", str);
             }
         } else if (smode == 1) {
             str = realloc(str, slen + 1);
@@ -69,71 +69,71 @@ char* compile(char* src) {
             }
             i--;
             num /= 10;
-            printf("[INT32 %i]", num);
+//            printf("[INT32 %i]", num);
             p1tokens = realloc(p1tokens, sizeof(struct parse_token_s1) * (p1count + 1));
             p1tokens[p1count].num = num;
             p1tokens[p1count].type = 2;
             p1count++;
         } else if (src[i] == '=') {
             if (src[i+1] == '=') {
-                printf("[EQUALS]");
+//                printf("[EQUALS]");
                 p1tokens = realloc(p1tokens, sizeof(struct parse_token_s1) * (p1count + 1));
                 p1tokens[p1count].type = 3;
                 p1count++;
                 i++;
             } else {
-                printf("[ASSIGN]");
+//                printf("[ASSIGN]");
                 p1tokens = realloc(p1tokens, sizeof(struct parse_token_s1) * (p1count + 1));
                 p1tokens[p1count].type = 4;
                 p1count++;
             }
         } else if (src[i] == '{') {
-            printf("[OPENING_BRACE]");
+//            printf("[OPENING_BRACE]");
             p1tokens = realloc(p1tokens, sizeof(struct parse_token_s1) * (p1count + 1));
             p1tokens[p1count].type = 5;
             p1count++;
         } else if (src[i] == '}') {
-            printf("[CLOSING_BRACE]");
+//            printf("[CLOSING_BRACE]");
             p1tokens = realloc(p1tokens, sizeof(struct parse_token_s1) * (p1count + 1));
             p1tokens[p1count].type = 6;
             p1count++;
         } else if (src[i] == ';') {
-            printf("[SEMICOLON]");
+//            printf("[SEMICOLON]");
             p1tokens = realloc(p1tokens, sizeof(struct parse_token_s1) * (p1count + 1));
             p1tokens[p1count].type = 7;
             p1count++;
         } else if (src[i] == '(') {
-            printf("[OPENING_PAREN]");
+//            printf("[OPENING_PAREN]");
             p1tokens = realloc(p1tokens, sizeof(struct parse_token_s1) * (p1count + 1));
             p1tokens[p1count].type = 8;
             p1count++;
         } else if (src[i] == ')') {
-            printf("[CLOSING_PAREN]");
+//            printf("[CLOSING_PAREN]");
             p1tokens = realloc(p1tokens, sizeof(struct parse_token_s1) * (p1count + 1));
             p1tokens[p1count].type = 9;
             p1count++;
         } else if (src[i] == 'v' && src[i+1] == 'o' && src[i+2] == 'i' && src[i+3] == 'd') {
-            printf("[VOID]");
+//            printf("[VOID]");
             p1tokens = realloc(p1tokens, sizeof(struct parse_token_s1) * (p1count + 1));
             p1tokens[p1count].type = 10;
             p1count++;
             i += 3;
         } else if (src[i] == 'i' && src[i+1] == 'n' && src[i+2] == 't') {
-            printf("[INTERRUPT]");
+//            printf("[INTERRUPT]");
             p1tokens = realloc(p1tokens, sizeof(struct parse_token_s1) * (p1count + 1));
             p1tokens[p1count].type = 11;
             p1count++;
             i += 2;
         } else if (src[i] == 'r' && src[i+1] == 'e' && src[i+2] == 't' && src[i+3] == 'u' && src[i+4] == 'r' && src[i+5] == 'n') {
-            printf("[RETURN]");
+//            printf("[RETURN]");
             p1tokens = realloc(p1tokens, sizeof(struct parse_token_s1) * (p1count + 1));
             p1tokens[p1count].type = 12;
             p1count++;
             i += 5;
         } else if (src[i] == ' ') {
-            printf(" ");
+//            printf(" ");
         } else if (src[i] == '\n') {
-            printf("\n");
+//            printf("\n");
         } else if ((src[i] >= 'a' && src[i] <= 'z') || (src[i] >= 'A' && src[i] <= 'Z')) {
             name = malloc(1);
             while ((src[i] >= 'a' && src[i] <= 'z') || (src[i] >= 'A' && src[i] <= 'Z')) {
@@ -144,7 +144,7 @@ char* compile(char* src) {
             }
             name[nlen] = 0;
             i--;
-            printf("[IDENT \"%s\"]", name);
+//            printf("[IDENT \"%s\"]", name);
             p1tokens = realloc(p1tokens, sizeof(struct parse_token_s1) * (p1count + 1));
             p1tokens[p1count].str = malloc(strlen(name) + 1);
             strcpy(p1tokens[p1count].str, name);
@@ -193,7 +193,7 @@ char* compile(char* src) {
         if (TIS(i,13) && TIS(i+1,13) && TIS(i+2,5)) {
             char* ass = malloc(strlen(T[i+1].str) + 10);
             sprintf(ass, "%08x_%s", M, T[i+1].str);
-            printf("[DECLARE \"%s\" AS \"%s\"]\n", ass, T[i].str);
+//            printf("[DECLARE \"%s\" AS \"%s\"]\n", ass, T[i].str);
             CSVV[CSP] = realloc(CSVV[CSP], (CSVC[CSP]+1) * sizeof(void*));
             CSVV[CSP][CSVC[CSP]] = ass;
             CSVC[CSP]++;
@@ -207,7 +207,7 @@ char* compile(char* src) {
             M++;
             i += 2;
         } else if (TIS(i,6)) {
-            printf("}]\n");
+//            printf("}]\n");
             if (CST[CSP] == CS_INITIALIZER) {
                 WR_OP_END_INITIALIZE(C, P, L);
             } else if (CST[CSP] == CS_FUNCTION) {
@@ -215,7 +215,7 @@ char* compile(char* src) {
             }
             CSP--;
         } else if (TIS(i,10) && TIS(i+1,13) && TIS(i+2,8) && TIS(i+3,9)) {
-            printf("[FUNCTION \"%s\" {\n", T[i+1].str);
+//            printf("[FUNCTION \"%s\" {\n", T[i+1].str);
             char* ass = malloc(strlen(T[i+1].str) + 10);
             sprintf(ass, "%08x_%s", M, T[i+1].str);
             CSVV[CSP] = realloc(CSVV[CSP], (CSVC[CSP]+1) * sizeof(void*));
@@ -231,10 +231,10 @@ char* compile(char* src) {
             i += 3;
         } else if (TIS(i, 11)) {
             WR_OP_INTERRUPT(C, P, L);
-            printf("[INTERRUPT]\n");
+//            printf("[INTERRUPT]\n");
         } else if (TIS(i, 12)) {
             WR_OP_RETURN(C, P, L);
-            printf("[RETURN]\n");
+//            printf("[RETURN]\n");
         } else if (TIS(i, 13) && TIS(i+1, 4) && TIS(i+2, 1)) {
             char* ass = T[i].str;
             for (int ii = 0; ii < CSVC[CSP]; ii++) {
@@ -243,7 +243,7 @@ char* compile(char* src) {
                     break;
                 }
             }
-            printf("[SET \"%s\" TO STRING \"%s\"]\n", ass, T[i+2].str);
+//            printf("[SET \"%s\" TO STRING \"%s\"]\n", ass, T[i+2].str);
             WR_OP_SET_STRING(C, P, L, ass, T[i+2].str);
             i += 2;
         } else if (TIS(i, 13) && TIS(i+1, 4) && TIS(i+2, 2)) {
@@ -254,33 +254,33 @@ char* compile(char* src) {
                     break;
                 }
             }
-            printf("[SET \"%s\" TO INT32 %i]\n", T[i].str, T[i+2].num);
+//            printf("[SET \"%s\" TO INT32 %i]\n", T[i].str, T[i+2].num);
             WR_OP_SET_INT32(C, P, L, ass, T[i+2].num);
             i += 2;
         } else if (TIS(i, 13) && TIS(i+1, 8)) {
-            printf("[CALL \"%s\" WITH ARGS (", T[i].str);
+//            printf("[CALL \"%s\" WITH ARGS (", T[i].str);
             CSP++;
             CST[CSP] = CS_ARGS;
             WR_OP_CALL(C, P, L, T[i].str);
             i++;
         } else if (TIS(i, 9)) {
             CSP--;
-            printf(")]\n");
+//            printf(")]\n");
             WR_OP_END_CALL_ARGS(C, P, L);
         } else if (TIS(i, 13)) {
             if (CST[CSP] == CS_ARGS) {
                 WR_OP_CALL_ARG_REF(C, P, L, T[i].str);
             }
-            printf("[REF \"%s\"]", T[i].str);
+//            printf("[REF \"%s\"]", T[i].str);
         } else {
-            
+
         }
-        printf("L = 0x%08x\nP = 0x%08x\n", L, P);
-        printf("compiler dump\n");
-        for (int i = 0; i < L; i++) {
-            printf("%c", C[i]);
-        }
-        printf("\n");
+//        printf("L = 0x%08x\nP = 0x%08x\n", L, P);
+//        printf("compiler dump\n");
+//        for (int i = 0; i < L; i++) {
+//            printf("%c", C[i]);
+//        }
+//        printf("\n");
     }
 
     if (arg_dump_code) {
