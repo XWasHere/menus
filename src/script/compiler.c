@@ -158,10 +158,26 @@ char* compile(char* src) {
     uint32_t codelen = 0;
     uint32_t codepos = 0;
     char*    code    = malloc(4096);
-#define C code
-#define P codepos
-#define L codelen
-#define T p1tokens
+    int      var_c = 0; // for shitty mangling
+    int      cstackp = 0;
+    char**   cstackv = malloc(sizeof(void*) * 16);
+    int*     cstackt = malloc(sizeof(int) * 16);
+    char***  cstackvars = malloc(sizeof(void*));
+             cstackvars[0] = malloc(1);
+    int*     cstackvarc = malloc(sizeof(int) * 16);
+             cstackvarc[0] = 0;
+#define C    code
+#define P    codepos
+#define L    codelen
+#define T    p1tokens
+#define M    var_c
+#define CSP  cstackp
+#define CST  cstackt
+#define CSV  cstackv
+#define CSVV cstackvars
+#define CSVC cstackvarc
+
+#define CS_INITIALIZER 0
 
     script_header_t* header  = (void*)code;
     codelen                 += sizeof(script_header_t);
@@ -170,39 +186,48 @@ char* compile(char* src) {
     header->version = 1;
     
     printf("starting menus stage 2 parser\n");
-    int depth = 0;
+
     for (int i = 0; i < p1count; i++) {
         if (p1tokens[i].type == 13 && p1tokens[i+1].type == 13 && p1tokens[i+2].type == 5) {
-            for (int i = 0; i < depth; i++) printf("  ");
-            printf("[INITIALIZE \"%s\" AS \"%s\" WITH PROPERTIES {\n", p1tokens[i+1].str, p1tokens[i].str);
-            depth++;
-            WR_OP_VAR(C, P, L, T[i + 1].str, T[i].str);
+            char* ass = malloc(strlen(T[i+1].str) + 10);
+            sprintf(ass, "%08x_%s", M, T[i+1].str);
+            printf("[DECLARE \"%s\" AS \"%s\"]\n", ass, T[i].str);
+            CSVV[CSP] = realloc(CSVV[CSP], (CSVC[CSP]+1) * sizeof(void*));
+            CSVV[CSP][CSVC[CSP]] = ass;
+            CSVC[CSP]++;
+            CSP++;
+            CSVV[CSP] = malloc(1);
+            CSVC[CSP] = 0;
+            CSV[CSP] = ass;
+            CST[CSP] = CS_INITIALIZER;
+            WR_OP_VAR(C, P, L, ass, T[i].str);
+            M++;
             i += 2;
         } else if (p1tokens[i].type == 6) {
-            for (int i = 0; i < depth - 1; i++) printf("  ");
             printf("}]\n");
-            depth--;
+            cstackp--;
         } else if (p1tokens[i].type == 10 && p1tokens[i+1].type == 13 && p1tokens[i+2].type == 8 && p1tokens[i+3].type == 9) {
-            for (int i = 0; i < depth; i++) printf("  ");
             printf("[FUNCTION \"%s\" {\n", p1tokens[i+1].str);
+            CSP++;
             i += 3;
-            depth++;
         } else if (p1tokens[i].type == 11) {
-            for (int i = 0; i < depth; i++) printf("  ");
             printf("[INTERRUPT]\n");
         } else if (p1tokens[i].type == 12) {
-            for (int i = 0; i < depth; i++) printf("  ");
             printf("[RETURN]\n");
         } else if (p1tokens[i].type == 13 && p1tokens[i+1].type == 4 && p1tokens[i+2].type == 1) {
-            for (int i = 0; i < depth; i++) printf("  ");
-            printf("[SET \"%s\" TO STRING \"%s\"]\n", p1tokens[i].str, p1tokens[i+2].str);
+            char* ass = T[i].str;
+            for (int ii = 0; ii < CSVC[CSP]; ii++) {
+                if (strcmp(CSVV[CSP][ii] + 9, T[i].str) == 0) {
+                    ass = CSVV[CSP][ii];
+                    break;
+                }
+            }
+            printf("[SET \"%s\" TO STRING \"%s\"]\n", ass, T[i+2].str);
             i += 2;
         } else if (p1tokens[i].type == 13 && p1tokens[i+1].type == 4 && p1tokens[i+2].type == 2) {
-            for (int i = 0; i < depth; i++) printf("  ");
             printf("[SET \"%s\" TO NUMBER %i]\n", p1tokens[i].str, p1tokens[i+2].num);
             i += 2;
         } else if (p1tokens[i].type == 13 && p1tokens[i+1].type == 8) {
-            for (int i = 0; i < depth; i++) printf("  ");
             printf("[CALL \"%s\" WITH ARGS (", p1tokens[i].str);
             i++;
         } else if (p1tokens[i].type == 9) {
