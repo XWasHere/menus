@@ -178,6 +178,8 @@ char* compile(char* src) {
 #define CSVC cstackvarc
 
 #define CS_INITIALIZER 0
+#define CS_ARGS        1
+#define CS_FUNCTION    2
 
 #define TIS(a, b) T[a].type == b
 
@@ -201,18 +203,37 @@ char* compile(char* src) {
             CSV[CSP] = ass;
             CST[CSP] = CS_INITIALIZER;
             WR_OP_VAR(C, P, L, ass, T[i].str);
+            WR_OP_INITIALIZE(C, P, L, ass);
             M++;
             i += 2;
         } else if (TIS(i,6)) {
             printf("}]\n");
+            if (CST[CSP] == CS_INITIALIZER) {
+                WR_OP_END_INITIALIZE(C, P, L);
+            } else if (CST[CSP] == CS_FUNCTION) {
+                WR_OP_END_FUNCTION(C, P, L);
+            }
             CSP--;
         } else if (TIS(i,10) && TIS(i+1,13) && TIS(i+2,8) && TIS(i+3,9)) {
             printf("[FUNCTION \"%s\" {\n", T[i+1].str);
+            char* ass = malloc(strlen(T[i+1].str) + 10);
+            sprintf(ass, "%08x_%s", M, T[i+1].str);
+            CSVV[CSP] = realloc(CSVV[CSP], (CSVC[CSP]+1) * sizeof(void*));
+            CSVV[CSP][CSVC[CSP]] = ass;
+            CSVC[CSP]++;
             CSP++;
+            CSVV[CSP] = malloc(1);
+            CSVC[CSP] = 0;
+            CSV[CSP] = ass;
+            CST[CSP] = CS_FUNCTION;
+            CSP++;
+            WR_OP_FUNCTION(C, P, L, ass, "Void");
             i += 3;
         } else if (TIS(i, 11)) {
+            WR_OP_INTERRUPT(C, P, L);
             printf("[INTERRUPT]\n");
         } else if (TIS(i, 12)) {
+            WR_OP_RETURN(C, P, L);
             printf("[RETURN]\n");
         } else if (TIS(i, 13) && TIS(i+1, 4) && TIS(i+2, 1)) {
             char* ass = T[i].str;
@@ -226,7 +247,6 @@ char* compile(char* src) {
             WR_OP_SET_STRING(C, P, L, ass, T[i+2].str);
             i += 2;
         } else if (TIS(i, 13) && TIS(i+1, 4) && TIS(i+2, 2)) {
-            printf("[SET \"%s\" TO INT32 %i]\n", T[i].str, T[i+2].num);
             char* ass = T[i].str;
             for (int ii = 0; ii < CSVC[CSP]; ii++) {
                 if (strcmp(CSVV[CSP][ii] + 9, T[i].str) == 0) {
@@ -234,13 +254,23 @@ char* compile(char* src) {
                     break;
                 }
             }
+            printf("[SET \"%s\" TO INT32 %i]\n", T[i].str, T[i+2].num);
+            WR_OP_SET_INT32(C, P, L, ass, T[i+2].num);
             i += 2;
         } else if (TIS(i, 13) && TIS(i+1, 8)) {
             printf("[CALL \"%s\" WITH ARGS (", T[i].str);
+            CSP++;
+            CST[CSP] = CS_ARGS;
+            WR_OP_CALL(C, P, L, T[i].str);
             i++;
         } else if (TIS(i, 9)) {
+            CSP--;
             printf(")]\n");
+            WR_OP_CALL_ARGS_END(C, P, L);
         } else if (TIS(i, 13)) {
+            if (CST[CSP] == CS_ARGS) {
+                WR_OP_CALL_ARG_REF(C, P, L, T[i].str);
+            }
             printf("[REF \"%s\"]", T[i].str);
         }
     }

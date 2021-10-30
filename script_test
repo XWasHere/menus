@@ -17,8 +17,6 @@ Menu menu {
     };
 };
 
-menu="hi";
-
 void main() {
     display(menu);
 };
