@@ -15,6 +15,15 @@
 #define OPCODE_FUNCTION       0x0A
 #define OPCODE_END_FUNCTION   0x0B
 
+// please dont be like me and do this.
+// every cell in your body will explode at once if you do. 
+#define MK_VAL_REF(dst, name) \
+dst = malloc(2 + strlen(name) + 1); \
+dst[0] = 0; \
+dst[1] = 3; \
+memcpy(dst + 2, name, strlen(name) + 1); \ 
+printf("%s\n", dst + 1);
+
 #define WR_OP_VAR(b, p, l, name, type) \
 { \
     int t = 1 + strlen(name) + 1 + strlen(type) + 1; \
@@ -40,7 +49,7 @@
 
 #define WR_OP_SET_STRING(b, p, l, name, value) \
 { \
-    char* v = malloc(3 + strlen(value) + 1); \
+    char* v = malloc(2 + strlen(value) + 1); \
     v[0] = 0; \
     v[1] = 1; \
     memcpy(v + 2, value, strlen(value) + 1); \
@@ -118,23 +127,21 @@
     p += t; \
 }
 
-#define WR_OP_CALL_ARG(b, p, l, value) \
+#define WR_OP_CALL_ARG(b, p, l, value, vsize) \
 { \
-    int t = 1 + strlen(value); \
+    int t = 1 + vsize; \
     l += t; \
     b = realloc(b, l); \
     b[p] = OPCODE_CALL_ARG; \
-    strcpy(b + p + 1, value); \
+    memcpy(b + p + 1, value, vsize); \
     p += t; \
 }
 
 #define WR_OP_CALL_ARG_REF(b, p, l, name) \
 { \
-    char* v = malloc(2 + strlen(name) + 1); \
-    v[0] = 0; \
-    v[1] = 3; \
-    memcpy(v + 2, name, strlen(name) + 1); \
-    WR_OP_CALL_ARG(b, p, l, v); \
+    char* v; \
+    MK_VAL_REF(v, name); \
+    WR_OP_CALL_ARG(b, p, l, v, 2 + strlen(v + 2)); \
     free(v); \
 }
 

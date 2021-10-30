@@ -271,7 +271,7 @@ char* compile(char* src) {
             if (CST[CSP] == CS_ARGS) {
                 WR_OP_CALL_ARG_REF(C, P, L, T[i].str);
             }
-//            printf("[REF \"%s\"]", T[i].str);
+            printf("[REF \"%s\"]", T[i].str);
         } else {
 
         }
