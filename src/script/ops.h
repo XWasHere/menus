@@ -3,12 +3,15 @@
 #ifndef MENUS_SCRIPT_OPS_H
 #define MENUS_SCRIPT_OPS_H
 
+#define OPCODE_VAR 1
+
 #define WR_OP_VAR(b, p, l, name, type) \
 { \
     int t = 1 + strlen(name) + 1 + strlen(type) + 1; \
     l += t;\
-    p += t; \
     b = realloc(b, l); \
+    b[p] = OPCODE_VAR; \
+    p += t; \
 }
 
 // please dont use this, use the per type ones instead because value isnt actually a string im just lazy
