@@ -69,7 +69,7 @@ char* compile(char* src) {
             }
             i--;
             num /= 10;
-            printf("[NUMBER %i]", num);
+            printf("[INT32 %i]", num);
             p1tokens = realloc(p1tokens, sizeof(struct parse_token_s1) * (p1count + 1));
             p1tokens[p1count].num = num;
             p1tokens[p1count].type = 2;
@@ -179,16 +179,16 @@ char* compile(char* src) {
 
 #define CS_INITIALIZER 0
 
+#define TIS(a, b) T[a].type == b
+
     script_header_t* header  = (void*)code;
     codelen                 += sizeof(script_header_t);
     codepos                  = codelen;
 
     header->version = 1;
     
-    printf("starting menus stage 2 parser\n");
-
     for (int i = 0; i < p1count; i++) {
-        if (p1tokens[i].type == 13 && p1tokens[i+1].type == 13 && p1tokens[i+2].type == 5) {
+        if (TIS(i,13) && TIS(i+1,13) && TIS(i+2,5)) {
             char* ass = malloc(strlen(T[i+1].str) + 10);
             sprintf(ass, "%08x_%s", M, T[i+1].str);
             printf("[DECLARE \"%s\" AS \"%s\"]\n", ass, T[i].str);
@@ -203,18 +203,18 @@ char* compile(char* src) {
             WR_OP_VAR(C, P, L, ass, T[i].str);
             M++;
             i += 2;
-        } else if (p1tokens[i].type == 6) {
+        } else if (TIS(i,6)) {
             printf("}]\n");
-            cstackp--;
-        } else if (p1tokens[i].type == 10 && p1tokens[i+1].type == 13 && p1tokens[i+2].type == 8 && p1tokens[i+3].type == 9) {
-            printf("[FUNCTION \"%s\" {\n", p1tokens[i+1].str);
+            CSP--;
+        } else if (TIS(i,10) && TIS(i+1,13) && TIS(i+2,8) && TIS(i+3,9)) {
+            printf("[FUNCTION \"%s\" {\n", T[i+1].str);
             CSP++;
             i += 3;
-        } else if (p1tokens[i].type == 11) {
+        } else if (TIS(i, 11)) {
             printf("[INTERRUPT]\n");
-        } else if (p1tokens[i].type == 12) {
+        } else if (TIS(i, 12)) {
             printf("[RETURN]\n");
-        } else if (p1tokens[i].type == 13 && p1tokens[i+1].type == 4 && p1tokens[i+2].type == 1) {
+        } else if (TIS(i, 13) && TIS(i+1, 4) && TIS(i+2, 1)) {
             char* ass = T[i].str;
             for (int ii = 0; ii < CSVC[CSP]; ii++) {
                 if (strcmp(CSVV[CSP][ii] + 9, T[i].str) == 0) {
@@ -223,17 +223,18 @@ char* compile(char* src) {
                 }
             }
             printf("[SET \"%s\" TO STRING \"%s\"]\n", ass, T[i+2].str);
+            WR_OP_SET_STRING(C, P, L, ass, T[i+2].str);
             i += 2;
-        } else if (p1tokens[i].type == 13 && p1tokens[i+1].type == 4 && p1tokens[i+2].type == 2) {
-            printf("[SET \"%s\" TO NUMBER %i]\n", p1tokens[i].str, p1tokens[i+2].num);
+        } else if (TIS(i, 13) && TIS(i+1, 4) && TIS(i+2, 2)) {
+            printf("[SET \"%s\" TO INT32 %i]\n", T[i].str, T[i+2].num);
             i += 2;
-        } else if (p1tokens[i].type == 13 && p1tokens[i+1].type == 8) {
-            printf("[CALL \"%s\" WITH ARGS (", p1tokens[i].str);
+        } else if (TIS(i, 13) && TIS(i+1, 8)) {
+            printf("[CALL \"%s\" WITH ARGS (", T[i].str);
             i++;
-        } else if (p1tokens[i].type == 9) {
+        } else if (TIS(i, 9)) {
             printf(")]\n");
-        } else if (p1tokens[i].type == 13) {
-            printf("[REF \"%s\"]", p1tokens[i].str);
+        } else if (TIS(i, 13)) {
+            printf("[REF \"%s\"]", T[i].str);
         }
     }
 
