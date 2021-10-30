@@ -227,6 +227,13 @@ char* compile(char* src) {
             i += 2;
         } else if (TIS(i, 13) && TIS(i+1, 4) && TIS(i+2, 2)) {
             printf("[SET \"%s\" TO INT32 %i]\n", T[i].str, T[i+2].num);
+            char* ass = T[i].str;
+            for (int ii = 0; ii < CSVC[CSP]; ii++) {
+                if (strcmp(CSVV[CSP][ii] + 9, T[i].str) == 0) {
+                    ass = CSVV[CSP][ii];
+                    break;
+                }
+            }
             i += 2;
         } else if (TIS(i, 13) && TIS(i+1, 8)) {
             printf("[CALL \"%s\" WITH ARGS (", T[i].str);
