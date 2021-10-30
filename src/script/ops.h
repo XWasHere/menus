@@ -51,10 +51,13 @@
 #define WR_OP_SET_INT32(b, p, l, name, value) \
 { \
     char* v = malloc(6); \
-    memset(v, 0, 4); \
+    memset(v, 0, 6); \
     v[0] = 0; \
     v[1] = 2; \
-    ((int*)v+2)[0] = value; \
+    v[2] = 0x000000FF & value >> 0; \
+    v[3] = 0x0000FF00 & value >> 8; \
+    v[4] = 0x00FF0000 & value >> 16; \
+    v[5] = 0xFF000000 & value >> 24; \
     WR_OP_SET(b, p, l, name, v, 6); \
     free(v); \
 }
