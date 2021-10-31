@@ -227,6 +227,7 @@ char* compile(char* src) {
             CSV[CSP] = ass;
             CST[CSP] = CS_FUNCTION;
             CSP++;
+            M++;
             WR_OP_FUNCTION(C, P, L, ass, "Void");
             i += 3;
         } else if (TIS(i, 11)) {
