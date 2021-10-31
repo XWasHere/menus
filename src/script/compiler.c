@@ -226,7 +226,6 @@ char* compile(char* src) {
             CSVC[CSP] = 0;
             CSV[CSP] = ass;
             CST[CSP] = CS_FUNCTION;
-            CSP++;
             M++;
             WR_OP_FUNCTION(C, P, L, ass, "Void");
             i += 3;
@@ -270,9 +269,20 @@ char* compile(char* src) {
             WR_OP_END_CALL_ARGS(C, P, L);
         } else if (TIS(i, 13)) {
             if (CST[CSP] == CS_ARGS) {
-                WR_OP_CALL_ARG_REF(C, P, L, T[i].str);
+                char* ass = T[i].str;
+                for (int iii = CSP - 1; iii >= 0; iii--) {
+                    printf("1 0x%08x\n", iii);
+                    for (int ii = 0; ii < CSVC[iii]; ii++) {
+                        printf("2 0x%08x %s\n", ii, CSVV[iii][ii]);
+                        if (strcmp(CSVV[iii][ii] + 9, T[i].str) == 0) {
+                            ass = CSVV[iii][ii];
+                            break;
+                        }
+                    }
+                }
+                WR_OP_CALL_ARG_REF(C, P, L, ass);
             }
-            printf("[REF \"%s\"]", T[i].str);
+//            printf("[REF \"%s\"]", T[i].str);
         } else {
 
         }
