@@ -1,5 +1,7 @@
-CC        := clang
-CC_ARGS   := -g3 -Wall
+CC        ?= clang
+CC_ARGS   ?= -g3 -Wall
+NASM      ?= nasm
+NASM_ARGS ?= -f elf64
 
 OBJECTS = \
 	build/main.o \
@@ -18,6 +20,11 @@ include $(OBJECTS:.o=.o.d)
 
 build/%.o.d: src/%.c
 	$(CC) $(CC_ARGS) -MM $< -MT "$(@:.o.d=.o)" -o $@
+
+build/%.o.d: src/%.s
+	
+build/%.o: src/%.s
+	$(NASM) $(NASM_ARGS) $< -o $@
 
 build/%.o: src/%.c
 	$(CC) $(CC_ARGS) -c $< -o $@

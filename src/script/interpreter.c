@@ -13,12 +13,30 @@ struct function {
 };
 typedef struct function function_t;
 
+struct callarg {
+    int type;
+    union {
+        char* refv;
+        char* stringv;
+        int   intv;
+    };
+};
+typedef struct callarg callarg_t;
+
 function_t* modfuncs;
 int         modfcount;
 uint32_t    modip;
 char*       modcode;
 int         modlen;
 int         modnativedist;
+char*       modcalling;
+int*        modstack;
+int         modcallargc;
+callarg_t*  modcallargv;
+
+void menus_vm_native_display() {
+    printf("this would display crap\n");
+}
 
 void menus_vm_load(module_t* module) {
     modcode = module->code;
@@ -26,8 +44,15 @@ void menus_vm_load(module_t* module) {
 
     modip     = 4;
     modfcount = 0;
-    modfuncs  = malloc(1);
+    modfuncs  = malloc(sizeof(function_t) * 1);
+    modstack  = malloc(256);
     modnativedist = 0;
+
+    modfuncs[0].native_addr = &menus_vm_native_display;
+    modfuncs[0].native = 1;
+    modfuncs[0].name = "display";
+
+    modfcount = 1;
 
     while (modip < modlen) {
         menus_vm_exec_instr();
@@ -76,13 +101,29 @@ int menus_vm_exec_instr() {
         if (modnativedist == 0) {
             modip++;
             return 0;
-        } 
+        }
     } else if (modcode[modip] == OPCODE_CALL) {
         char* name = modcode + modip + 1;
+        modcalling = name;
         printf("CALL %s\n", name);
     } else if (modcode[modip] == OPCODE_END_CALL_ARGS) {
+        modcallargv = realloc(modcallargv, sizeof(callarg_t) * (modcallargc + 1));
+        for (int i = 0; i < modfcount; i++) {
+            if (strcmp(modfuncs[i].name, modcalling) == 0) {
+                if (modfuncs[i].native == 0) {
+                    menus_vm_call(modcalling);
+                } else {
+                    ((void(*)())modfuncs[i].native_addr)();
+                }
+            }
+        }
+        printf("%s\n", modcalling);
+        modcallargc = 0;
+        free(modcallargv);
+        modcallargv = malloc(1);
         printf("END_ARGS\n");
     } else if (modcode[modip] == OPCODE_CALL_ARG) {
+        modcallargv = realloc(modcallargv, sizeof(callarg_t) * (modcallargc + 1));
         if (modcode[modip+1] == 0) {
             if (modcode[modip+2] == 1) {
                 char* value = modcode + modip + 2;
@@ -95,6 +136,9 @@ int menus_vm_exec_instr() {
             } else if (modcode[modip+2] == 3) {
                 char* value = modcode + modip + 2;
                 printf("ARG REF %s\n", value);
+                modcallargv[modcallargc].type = 3;
+                modcallargv[modcallargc].refv = value;
+                modcallargc++;
                 modip += 2 + strlen(value);
             }
         }
@@ -118,14 +162,12 @@ int menus_vm_exec_instr() {
     return 1;
 }
 
+
 void menus_vm_call(char* name) {
     for (int i = 0; i < modfcount; i++) {
         if (strcmp(modfuncs[i].name, name) == 0) {
-            printf ("AAAAA\n");
             modip = modfuncs[i].addr;
-            while (menus_vm_exec_instr()) {
-
-            }
+            while (menus_vm_exec_instr()) {}
             break;
         }
     }

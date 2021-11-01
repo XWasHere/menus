@@ -4,7 +4,7 @@
 #include "compiler.h"
 
 void menus_vm_load(module_t*);
-int menus_vm_exec_instr();
+int  menus_vm_exec_instr();
 void menus_vm_call(char*);
 
 #endif
