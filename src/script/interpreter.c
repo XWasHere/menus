@@ -23,9 +23,6 @@ void load(module_t* module) {
     modcode = module->code;
     modlen  = module->length;
 
-    printf("loaded\n");
-    printf("initializing\n");
-
     modip     = 4;
     modfcount = 0;
     modfuncs  = malloc(1);
@@ -93,9 +90,18 @@ void execinstr() {
     } else if (modcode[modip] == OPCODE_FUNCTION) {
         char* name = modcode + modip + 1;
         printf("FUNCTION %s\n", name);
+        modfuncs = realloc(modfuncs, sizeof(function_t) * (modfcount + 1));
+        modfuncs[modfcount].name = name;
+        modfuncs[modfcount].native = 0;
+        modfuncs[modfcount].addr = modip + strlen(name) + 2;
+        modfcount++;
         modip += 2 + strlen(name);
     } else if (modcode[modip] == OPCODE_END_FUNCTION) {
         printf("END_FUNCTION\n");
     }
     modip++;
+}
+
+void menus_vm_call(char* name) {
+    
 }
