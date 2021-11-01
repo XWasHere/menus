@@ -9,7 +9,7 @@ struct script_header {
 typedef struct script_header script_header_t;
 
 struct module {
-    uint32_t lengrh;
+    uint32_t length;
     char* code;
 };
 typedef struct module module_t;

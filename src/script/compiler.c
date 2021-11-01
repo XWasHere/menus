@@ -212,6 +212,9 @@ struct module* compile(char* src) {
                 WR_OP_END_INITIALIZE(C, P, L);
             } else if (CST[CSP] == CS_FUNCTION) {
                 WR_OP_END_FUNCTION(C, P, L);
+                if (CST[CSP-1] == CS_INITIALIZER) {
+                    WR_OP_SET_REF(C, P, L, CSV[CSP] + 9, CSV[CSP]);
+                }
             }
             CSP--;
         } else if (TIS(i,10) && TIS(i+1,13) && TIS(i+2,8) && TIS(i+3,9)) {
@@ -228,9 +231,6 @@ struct module* compile(char* src) {
             CST[CSP] = CS_FUNCTION;
             M++;
             WR_OP_FUNCTION(C, P, L, ass, "Void");
-            if (CST[CSP-1] == CS_INITIALIZER) {
-                WR_OP_SET_REF(C, P, L, T[i+1].str, ass);
-            }
             i += 3;
         } else if (TIS(i, 11)) {
             WR_OP_INTERRUPT(C, P, L);
@@ -308,6 +308,6 @@ struct module* compile(char* src) {
 
     struct module* hi = malloc(sizeof(struct module));
     hi->code = code;
-    hi->lengrh = codelen;
+    hi->length = codelen;
     return hi;
 }

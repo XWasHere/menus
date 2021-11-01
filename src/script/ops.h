@@ -22,8 +22,7 @@ dst = malloc(2 + strlen(name) + 1); \
 memset(dst, 0, 2 + strlen(name) + 1); \
 dst[0] = 0; \
 dst[1] = 3; \
-memcpy(dst + 2, name, strlen(name) + 1); \ 
-printf("%s\n", dst + 1);
+memcpy(dst + 2, name, strlen(name) + 1);
 
 #define WR_OP_VAR(b, p, l, name, type) \
 { \
@@ -152,7 +151,7 @@ printf("%s\n", dst + 1);
 { \
     char* v; \
     MK_VAL_REF(v, name); \
-    WR_OP_CALL_ARG(b, p, l, v, 2 + strlen(v + 2)); \
+    WR_OP_CALL_ARG(b, p, l, v, 2 + strlen(v + 2) + 1); \
     free(v); \
 }
 

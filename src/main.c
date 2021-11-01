@@ -35,6 +35,7 @@
 #include "color.h"
 #include "args.h"
 #include "script/compiler.h"
+#include "script/interpreter.h"
 
 int            id;
 char           menusi[256];
@@ -228,7 +229,8 @@ void menus_help(int argc, char** argv) {
 int main(int argc, char** argv) {
     parse_args(argc, argv);
     if (arg_has_src) {
-        compile(arg_src);
+        module_t* m = compile(arg_src);
+        load(m);
     }
     return 0;
 
