@@ -130,6 +130,11 @@ struct module* compile(char* src) {
             p1tokens[p1count].type = 12;
             p1count++;
             i += 5;
+        } else if (src[i] == 'e' && src[i+1] == 'x' && src[i+2] == 'p' && src[i+3] == 'o' && src[i+4] == 'r' && src[i+5] == 't') {
+            p1tokens = realloc(p1tokens, sizeof(struct parse_token_s1) * (p1count + 1));
+            p1tokens[p1count].type = 14;
+            p1count++;
+            i += 5;
         } else if (src[i] == ' ') {
 //            printf(" ");
         } else if (src[i] == '\n') {
@@ -220,7 +225,11 @@ struct module* compile(char* src) {
         } else if (TIS(i,10) && TIS(i+1,13) && TIS(i+2,8) && TIS(i+3,9)) {
 //            printf("[FUNCTION \"%s\" {\n", T[i+1].str);
             char* ass = malloc(strlen(T[i+1].str) + 10);
-            sprintf(ass, "%08x_%s", M, T[i+1].str);
+            if (TIS(i-1, 14)) {
+                ass = T[i+1].str;
+            } else {
+                sprintf(ass, "%08x_%s", M, T[i+1].str);
+            }
             CSVV[CSP] = realloc(CSVV[CSP], (CSVC[CSP]+1) * sizeof(void*));
             CSVV[CSP][CSVC[CSP]] = ass;
             CSVC[CSP]++;

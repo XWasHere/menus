@@ -157,7 +157,7 @@ memcpy(dst + 2, name, strlen(name) + 1);
 
 #define WR_OP_FUNCTION(b, p, l, name, type) \
 { \
-    int t = 1 + strlen(name) + 1 + strlen(type) + 1; \
+    int t = 1 + strlen(name) + 1 + strlen(type) + 1 + 1; \
     l += t; \
     b  = realloc(b, l); \
     b[p] = OPCODE_FUNCTION; \
