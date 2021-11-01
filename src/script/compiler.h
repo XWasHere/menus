@@ -14,6 +14,6 @@ struct module {
 };
 typedef struct module module_t;
 
-struct module* compile(char* src);
+struct module* menus_vm_compile(char* src);
 
 #endif

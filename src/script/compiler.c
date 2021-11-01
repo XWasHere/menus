@@ -16,7 +16,7 @@ struct parse_token_s1 {
     int   num;
 };
 
-struct module* compile(char* src) {
+struct module* menus_vm_compile(char* src) {
 //    printf("reading source\n");
 //    printf("%s\n", src);
 //    printf("starting menus stage 1 parser\n");

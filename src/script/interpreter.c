@@ -19,7 +19,7 @@ uint32_t    modip;
 char*       modcode;
 int         modlen;
 
-void load(module_t* module) {
+void menus_vm_load(module_t* module) {
     modcode = module->code;
     modlen  = module->length;
 
@@ -28,11 +28,11 @@ void load(module_t* module) {
     modfuncs  = malloc(1);
     
     while (modip < modlen) {
-        execinstr();
+        menus_vm_exec_instr();
     }
 }
 
-void execinstr() {
+void menus_vm_exec_instr() {
     if (modcode[modip] == OPCODE_VAR) {
         char* name = modcode + modip + 1;
         char* type = modcode + modip + 1 + strlen(name) + 1;
@@ -103,5 +103,9 @@ void execinstr() {
 }
 
 void menus_vm_call(char* name) {
-    
+    for (int i = 0; i < modfcount; i++) {
+        if (strcmp(modfuncs[i].name, name) == 0) {
+            printf ("AAAAA\n");
+        }
+    }
 }

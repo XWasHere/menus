@@ -229,8 +229,8 @@ void menus_help(int argc, char** argv) {
 int main(int argc, char** argv) {
     parse_args(argc, argv);
     if (arg_has_src) {
-        module_t* m = compile(arg_src);
-        load(m);
+        module_t* m = menus_vm_compile(arg_src);
+        menus_vm_load(m);
     }
     return 0;
 

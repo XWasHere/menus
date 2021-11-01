@@ -3,7 +3,8 @@
 
 #include "compiler.h"
 
-void load(module_t*);
-void execinstr();
+void menus_vm_load(module_t*);
+void menus_vm_exec_instr();
+void menus_vm_call(char*);
 
 #endif
