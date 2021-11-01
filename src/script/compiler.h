@@ -8,6 +8,11 @@ struct script_header {
 };
 typedef struct script_header script_header_t;
 
-char* compile(char* src);
+struct module {
+    uint32_t lengrh;
+    char* code;
+};
+
+struct module* compile(char* src);
 
 #endif

@@ -16,7 +16,7 @@ struct parse_token_s1 {
     int   num;
 };
 
-char* compile(char* src) {
+struct module* compile(char* src) {
 //    printf("reading source\n");
 //    printf("%s\n", src);
 //    printf("starting menus stage 1 parser\n");
@@ -228,6 +228,9 @@ char* compile(char* src) {
             CST[CSP] = CS_FUNCTION;
             M++;
             WR_OP_FUNCTION(C, P, L, ass, "Void");
+            if (CST[CSP-1] == CS_INITIALIZER) {
+                WR_OP_SET_REF(C, P, L, T[i+1].str, ass);
+            }
             i += 3;
         } else if (TIS(i, 11)) {
             WR_OP_INTERRUPT(C, P, L);
@@ -303,5 +306,8 @@ char* compile(char* src) {
         chmod(arg_dump_code_file, S_IROTH | S_IWOTH | S_IWGRP | S_IRGRP | S_IWUSR | S_IRUSR);
     }
 
-    return code;
+    struct module* hi = malloc(sizeof(struct module));
+    hi->code = code;
+    hi->lengrh = codelen;
+    return hi;
 }

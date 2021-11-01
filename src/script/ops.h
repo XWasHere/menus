@@ -19,6 +19,7 @@
 // every cell in your body will explode at once if you do. 
 #define MK_VAL_REF(dst, name) \
 dst = malloc(2 + strlen(name) + 1); \
+memset(dst, 0, 2 + strlen(name) + 1); \
 dst[0] = 0; \
 dst[1] = 3; \
 memcpy(dst + 2, name, strlen(name) + 1); \ 
@@ -68,6 +69,16 @@ printf("%s\n", dst + 1);
     v[4] = 0x00FF0000 & value >> 16; \
     v[5] = 0xFF000000 & value >> 24; \
     WR_OP_SET(b, p, l, name, v, 6); \
+    free(v); \
+}
+
+#define WR_OP_SET_REF(b, p, l, name, value) \
+{ \
+    char* v = malloc(strlen(value) + 3); \
+    v[0] = 0; \
+    v[1] = 3; \
+    strcpy(v + 2, value); \
+    WR_OP_SET(b, p, l, name, v, strlen(value) + 3); \
     free(v); \
 }
 
