@@ -7,7 +7,8 @@ OBJECTS = \
 	build/ipc.o \
 	build/color.o \
 	build/args.o \
-	build/script/compiler.o
+	build/script/compiler.o \
+	build/script/interpreter.o
 
 .PHONY: build clean all
 

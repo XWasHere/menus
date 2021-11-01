@@ -274,9 +274,9 @@ struct module* compile(char* src) {
             if (CST[CSP] == CS_ARGS) {
                 char* ass = T[i].str;
                 for (int iii = CSP - 1; iii >= 0; iii--) {
-                    printf("1 0x%08x\n", iii);
+//                    printf("1 0x%08x\n", iii);
                     for (int ii = 0; ii < CSVC[iii]; ii++) {
-                        printf("2 0x%08x %s\n", ii, CSVV[iii][ii]);
+//                        printf("2 0x%08x %s\n", ii, CSVV[iii][ii]);
                         if (strcmp(CSVV[iii][ii] + 9, T[i].str) == 0) {
                             ass = CSVV[iii][ii];
                             break;

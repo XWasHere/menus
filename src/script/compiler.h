@@ -12,6 +12,7 @@ struct module {
     uint32_t lengrh;
     char* code;
 };
+typedef struct module module_t;
 
 struct module* compile(char* src);
 
