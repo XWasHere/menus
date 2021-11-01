@@ -18,6 +18,7 @@ int         modfcount;
 uint32_t    modip;
 char*       modcode;
 int         modlen;
+int         modnativedist;
 
 void menus_vm_load(module_t* module) {
     modcode = module->code;
@@ -26,13 +27,17 @@ void menus_vm_load(module_t* module) {
     modip     = 4;
     modfcount = 0;
     modfuncs  = malloc(1);
-    
+    modnativedist = 0;
+
     while (modip < modlen) {
         menus_vm_exec_instr();
     }
+
+    menus_vm_call("main");
 }
 
-void menus_vm_exec_instr() {
+int menus_vm_exec_instr() {
+    if (modip > modlen) return 0;
     if (modcode[modip] == OPCODE_VAR) {
         char* name = modcode + modip + 1;
         char* type = modcode + modip + 1 + strlen(name) + 1;
@@ -64,8 +69,14 @@ void menus_vm_exec_instr() {
         printf("END_INITIALIZE\n");
     } else if (modcode[modip] == OPCODE_INTERRUPT) {
         printf("INTERRUPT\n");
+        modip++;
+        return 0;
     } else if (modcode[modip] == OPCODE_RETURN) {
         printf("RETURN\n");
+        if (modnativedist == 0) {
+            modip++;
+            return 0;
+        } 
     } else if (modcode[modip] == OPCODE_CALL) {
         char* name = modcode + modip + 1;
         printf("CALL %s\n", name);
@@ -98,14 +109,24 @@ void menus_vm_exec_instr() {
         modip += 2 + strlen(name);
     } else if (modcode[modip] == OPCODE_END_FUNCTION) {
         printf("END_FUNCTION\n");
+        if (modnativedist == 0) {
+            modip++;
+            return 0;
+        } 
     }
     modip++;
+    return 1;
 }
 
 void menus_vm_call(char* name) {
     for (int i = 0; i < modfcount; i++) {
         if (strcmp(modfuncs[i].name, name) == 0) {
             printf ("AAAAA\n");
+            modip = modfuncs[i].addr;
+            while (menus_vm_exec_instr()) {
+
+            }
+            break;
         }
     }
 }
